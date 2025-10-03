@@ -1,3 +1,8 @@
+import pandas as pd
+import re
+import numpy as np
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+
 
 # ---------------------------
 # 0) Utilidades genéricas
