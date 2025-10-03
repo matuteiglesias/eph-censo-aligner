@@ -1,0 +1,1137 @@
+HOGAR:
+  REALIZADA:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No (hogar no respuesta)
+    3: MISSING
+
+  TRIMESTRE:
+    0: NOTAPPLICABLE
+    1: 1er. Trimestre
+    2: 2do. Trimestre
+    3: 3er. Trimestre
+    4: 4to. Trimestre
+    5: MISSING
+
+  REGION:
+    0: NOTAPPLICABLE
+    1: Gran Buenos Aires
+    40: NOA
+    41: NEA
+    42: Cuyo
+    43: Pampeana
+    44: Patagónica
+    99: MISSING
+
+  MAS_500:
+    N: Conjunto de aglomerados de menos de 500.000 habitantes
+    S: Conjunto de aglomerados de 500.000 o más habitantes
+
+  AGLOMERADO:
+    0: NOTAPPLICABLE
+    2: Gran La Plata
+    3: Bahía Blanca – Cerri
+    4: Gran Rosario
+    5: Gran Santa Fe
+    6: Gran Paraná
+    7: Posadas
+    8: Gran Resistencia
+    9: Gral. Rivadavia – Rada Tilly
+    10: Gran Mendoza
+    12: Corrientes
+    13: Gran Córdoba
+    14: Concordia
+    15: Formosa
+    17: Neuquén – Plottier
+    18: Sgo. del Estero – La Banda
+    19: Jujuy – Palpalá
+    20: Río Gallegos
+    22: Gran Catamarca
+    23: Salta
+    25: La Rioja
+    26: San Luis – El Chorrillo
+    27: Gran San Juan
+    29: Gran Tucumán – T. Viejo
+    30: Santa Rosa – Toay
+    31: Ushuaia – Río Grande
+    32: Ciudad de Buenos Aires
+    33: Partidos del GBA
+    34: Mar del Plata – Batán
+    36: Río Cuarto
+    38: San Nicolás – Villa Constitución
+    91: Rawson – Trelew
+    93: Viedma – Carmen de Patagones
+    99: MISSING
+
+  IV1:
+    0: NOTAPPLICABLE
+    1: Casa
+    2: Departamento
+    3: Pieza de inquilinato
+    4: Pieza en hotel / pensión
+    5: Local no construido para habitación
+    6: Otros
+    9: MISSING
+
+  IV2:
+    0: NOTAPPLICABLE
+    # valores numéricos absolutos, ej: 1, 2, 3... = cantidad de ambientes
+    99: MISSING
+
+  IV3:
+    0: NOTAPPLICABLE
+    1: Mosaico / baldosa / madera / cerámica / alfombra
+    2: Cemento / ladrillo fijo
+    3: Ladrillo suelto / tierra
+    4: Otro
+    9: MISSING
+
+  IV4:
+    0: NOTAPPLICABLE
+    1: Membrana / cubierta asfáltica
+    2: Baldosa / losa sin cubierta
+    3: Pizarra / teja
+    4: Chapa de metal sin cubierta
+    5: Chapa de fibrocemento / plástico
+    6: Chapa de cartón
+    7: Caña / tabla / paja con barro / paja sola
+    9: N/S – Depto en propiedad horizontal
+    99: MISSING
+
+  IV5:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  IV6:
+    0: NOTAPPLICABLE
+    1: Por cañería dentro de la vivienda
+    2: Fuera de la vivienda pero dentro del terreno
+    3: Fuera del terreno
+    9: MISSING
+
+  IV7:
+    0: NOTAPPLICABLE
+    1: Red pública (agua corriente)
+    2: Perforación con bomba a motor
+    3: Perforación con bomba manual
+    4: Otra fuente
+    9: MISSING
+
+  IV8:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  IV9:
+    0: NOTAPPLICABLE
+    1: Dentro de la vivienda
+    2: Fuera de la vivienda pero dentro del terreno
+    3: Fuera del terreno
+    9: MISSING
+
+  IV10:
+    0: NOTAPPLICABLE
+    1: Inodoro con botón / mochila (arrastre agua)
+    2: Inodoro sin botón / cadena (arrastre de agua a balde)
+    3: Letrina (sin arrastre de agua)
+    9: MISSING
+
+  IV11:
+    0: NOTAPPLICABLE
+    1: Red pública (cloaca)
+    2: Cámara séptica y pozo ciego
+    3: Sólo a pozo ciego
+    4: Hoyo / excavación en la tierra
+    9: MISSING
+
+  IV12_1:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  IV12_2:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  IV12_3:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  # II2, II3_1, II5_1, II6_1 son "¿cuántos?" → variables numéricas; no se enumeran en values.yaml.
+
+  II3:
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II4_1:  # Cuarto de cocina
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II4_2:  # Lavadero
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II4_3:  # Garage
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II5:    # De los ambientes adicionales, ¿usan alguno para dormir?
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II6:    # ¿Utiliza alguno exclusivamente como lugar de trabajo?
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  II7:    # Régimen de tenencia
+    0: NOTAPPLICABLE
+    1: Propietario de la vivienda y del terreno
+    2: Propietario sólo de la vivienda
+    3: Inquilino / arrendatario
+    4: Ocupante por pago de impuestos/expensas
+    5: Ocupante en relación de dependencia
+    6: Ocupante gratuito (con permiso)
+    7: Ocupante de hecho (sin permiso)
+    8: Está en sucesión
+    9: Otra situación
+
+  II8:    # Combustible utilizado para cocinar
+    0: NOTAPPLICABLE
+    1: Gas de red
+    2: Gas de tubo / garrafa
+    3: Kerosene / leña / carbón
+    4: Otro
+    9: MISSING
+
+  II9:    # Baño (tenencia y uso)
+    0: NOTAPPLICABLE
+    1: Uso exclusivo del hogar
+    2: Compartido con otros hogares de la misma vivienda
+    3: Compartido con otra/s vivienda/s
+    4: No tiene baño
+    9: MISSING
+
+  # === ESTRATEGIAS DEL HOGAR (últimos tres meses) ===
+  V1:
+    0: NOTAPPLICABLE
+    1: Sí (de lo que ganan en el trabajo)
+    2: No
+    9: MISSING
+
+  V2:
+    0: NOTAPPLICABLE
+    1: Sí (de alguna jubilación o pensión)
+    2: No
+    9: MISSING
+
+  V21:  # aguinaldo de jubilación/pensión cobrada el mes anterior
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V22:  # retroactivo de jubilación/pensión cobrado el mes anterior
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V3:   # indemnización por despido
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V4:   # seguro de desempleo
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V5:   # subsidio/ayuda social (dinero) de gobierno/iglesias/etc.
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V6:   # mercaderías/ropa/alimentos del gobierno/iglesias/escuelas
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V7:   # mercaderías/ropa/alimentos de familiares/vecinos/otras personas
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V8:   # alquiler (vivienda/terreno/oficina) de su propiedad
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V9:   # ganancias de negocio en el que no trabajan
+    0: NOTAPPLICABLE
+    1: Sí
+    2: No
+    9: MISSING
+
+  V10:
+    0: NOTAPPLICABLE
+    1: Sí  # intereses/rentas por plazos fijos/inversiones
+    2: No
+    9: MISSING
+
+  V11:
+    0: NOTAPPLICABLE
+    1: Sí  # beca de estudio
+    2: No
+    9: MISSING
+
+  V12:
+    0: NOTAPPLICABLE
+    1: Sí  # cuotas de alimentos / ayuda en dinero (de no convivientes)
+    2: No
+    9: MISSING
+
+  V13:
+    0: NOTAPPLICABLE
+    1: Sí  # gastar ahorros
+    2: No
+    9: MISSING
+
+  V14:
+    0: NOTAPPLICABLE
+    1: Sí  # pedir préstamos a familiares/amigos
+    2: No
+    9: MISSING
+
+  V15:
+    0: NOTAPPLICABLE
+    1: Sí  # pedir préstamos a bancos/financieras/etc.
+    2: No
+    9: MISSING
+
+  V16:
+    0: NOTAPPLICABLE
+    1: Sí  # compras en cuotas/fiado (tarjeta/libreta)
+    2: No
+    9: MISSING
+
+  V17:
+    0: NOTAPPLICABLE
+    1: Sí  # vendieron pertenencias
+    2: No
+    9: MISSING
+
+  V18:
+    0: NOTAPPLICABLE
+    1: Sí  # otros ingresos en efectivo (limosnas, azar, etc.)
+    2: No
+    9: MISSING
+
+  V19_A:
+    0: NOTAPPLICABLE
+    1: Sí  # menores <10 trabajan por dinero
+    2: No
+    9: MISSING
+
+  V19_B:
+    0: NOTAPPLICABLE
+    1: Sí  # menores <10 piden dinero
+    2: No
+    9: MISSING
+
+  # --- Resumen del hogar (cantidades) → variables numéricas; no enumerar en values.yaml ---
+  # IX_TOT:     Cantidad de miembros del hogar
+  # IX_MEN10:   Miembros <10 años
+  # IX_MAYEQ10: Miembros ≥10 años
+
+  # --- Ingreso total familiar ---
+  # ITF: monto numérico (no enumerar)
+
+  DECIFR:
+    "00": Sin Ingresos
+    "01": Decil 1
+    "02": Decil 2
+    "03": Decil 3
+    "04": Decil 4
+    "05": Decil 5
+    "06": Decil 6
+    "07": Decil 7
+    "08": Decil 8
+    "09": Decil 9
+    "10": Decil 10
+
+  IDECIFR: *DECIFR
+  RDECIFR: *DECIFR
+  GDECIFR: *DECIFR
+  PDECIFR: *DECIFR
+  ADECIFR: *DECIFR
+
+  # --- Ingreso per cápita familiar ---
+  # IPCF: monto numérico (no enumerar)
+
+  DECCFR: *DECIFR
+  IDECCFR: *DECIFR
+  RDECCFR: *DECIFR
+  GDECCFR: *DECIFR
+  PDECCFR: *DECIFR
+  ADECCFR: *DECIFR
+
+  # --- Organización del hogar (referencias a componentes o externos) ---
+  VII1_1:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    99: MISSING
+
+  VII1_2:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    98: Ninguna
+    99: MISSING
+
+  VII2_1:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    98: Ninguna
+    99: MISSING
+
+  VII2_2:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    98: Ninguna
+    99: MISSING
+
+  VII2_3:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    98: Ninguna
+    99: MISSING
+
+  VII2_4:
+    0: NOTAPPLICABLE
+    96: Servicio doméstico
+    97: Otra persona que no vive en el hogar
+    98: Ninguna
+    99: MISSING
+
+  # --- Imputaciones de ingresos del hogar ---
+  IDIMPH:
+    "00000": Hogar no imputado
+    # Resto de códigos: ver manual (cada dígito indica imputación por rubro).
+INDIVIDUAL:
+  # Identificación
+  COMPONENTE:
+    51: Servicio doméstico en hogares
+    71: Pensionistas en hogares
+    # Nota: 1..50 suelen ser miembros del hogar (orden); no se listan.
+
+  H15:
+    0: NOTAPPLICABLE
+    1: Sí  # entrevista individual realizada
+    2: No
+    9: MISSING
+
+  TRIMESTRE:
+    1: 1er Trimestre
+    2: 2do Trimestre
+    3: 3er Trimestre
+    4: 4to Trimestre
+
+  REGION:
+    1: Gran Buenos Aires
+    40: NOA
+    41: NEA
+    42: Cuyo
+    43: Pampeana
+    44: Patagónica
+
+  MAS_500:
+    N: <500.000 habitantes
+    S: ≥500.000 habitantes
+
+  # AGLOMERADO: muchos códigos específicos (Gran La Plata, Bahía Blanca, Rosario, etc.).
+  # Sugerencia: mantener el mapeo en un archivo anexo (geocódigos) y referenciarlo aquí.
+
+  # Características de los miembros del hogar (del cuestionario del hogar)
+  CH03:
+    "01": Jefe/a
+    "02": Cónyuge/Pareja
+    "03": Hijo/a o Hijastro/a
+    "04": Yerno/Nuera
+    "05": Nieto/a
+    "06": Madre/Padre
+    "07": Suegro/a
+    "08": Hermano/a
+    "09": Otros familiares
+    "10": No familiares
+
+  CH04:
+    1: Varón
+    2: Mujer
+
+  # CH06: edad en años cumplidos (entero); no enumerar.
+
+  CH07:
+    1: Unido/a
+    2: Casado/a
+    3: Separado/a o Divorciado/a
+    4: Viudo/a
+    5: Soltero/a
+
+  CH08:
+    1: Obra social (incluye PAMI)
+    2: Mutual/Prepaga/Servicio de emergencia
+    3: Planes y seguros públicos
+    4: No paga ni le descuentan
+    9: Ns/Nr
+    12: Obra social + Mutual/Prepaga/Servicio de emergencia
+    13: Obra social + Planes y Seguros Públicos
+    23: Mutual/Prepaga/Serv. emergencia + Planes y Seguros Públicos
+    123: Obra social + Mutual/Prepaga/Serv. emergencia + Planes y Seguros Públicos
+
+  CH09:
+    1: Sí  # sabe leer y escribir
+    2: No
+    3: Menor de 2 años
+
+  CH10:
+    1: Sí, asiste
+    2: No asiste, pero asistió
+    3: Nunca asistió
+
+  CH11:
+    1: Público
+    2: Privado
+    9: Ns/Nr
+
+  CH12:
+    1: Jardín/Preescolar
+    2: Primario
+    3: EGB
+    4: Secundario
+    5: Polimodal
+    6: Terciario
+    7: Universitario
+    8: Posgrado universitario
+    9: Educación especial (discapacidad)
+
+  CH13:
+    1: Sí  # finalizó ese nivel
+    2: No
+    9: Ns/Nr
+
+  CH14:
+    "00": Ninguno
+    # "01".."09": Primero..Noveno (no se enumeran uno por uno)
+    "98": Educación especial
+    "99": Ns/Nr
+
+  CH15:
+    1: En esta localidad
+    2: En otra localidad de esta provincia
+    3: En otra provincia (especificar)
+    4: En país limítrofe (especificar)
+    5: En otro país (especificar)
+    9: Ns/Nr
+
+  CH15_COD:
+    3: Código de provincia (ver anexo geográfico)
+    4: Código de país limítrofe (ver anexo)
+    5: Código de otro país (ver anexo)
+    # Resto: usar catálogo externo de códigos geográficos.
+
+  CH16:
+    1: En esta localidad
+    2: En otra localidad de esta provincia
+    3: En otra provincia (especificar)
+    4: En país limítrofe (especificar)
+    5: En otro país (especificar)
+    6: No había nacido
+    9: Ns/Nr
+
+  CH16_COD:
+    3: Código de provincia (ver anexo geográfico)
+    4: Código de país limítrofe (ver anexo)
+    5: Código de otro país (ver anexo)
+
+  NIVEL_ED:
+    1: Primaria incompleta (incluye educación especial)
+    2: Primaria completa
+    3: Secundaria incompleta
+    4: Secundaria completa
+    5: Superior/Universitaria incompleta
+    6: Superior/Universitaria completa
+    7: Sin instrucción
+    9: Ns/Nr
+
+  ESTADO:
+    0: Entrevista individual no realizada
+    1: Ocupado
+    2: Desocupado
+    3: Inactivo
+    4: Menor de 10 años
+
+  CAT_OCUP:
+    1: Patrón
+    2: Cuenta propia
+    3: Obrero o empleado
+    4: Trabajador familiar sin remuneración
+    9: Ns/Nr
+
+  CAT_INAC:
+    1: Jubilado/Pensionado
+    2: Rentista
+    3: Estudiante
+    4: Ama de casa
+    5: Menor de 6 años
+    6: Discapacitado
+    7: Otros
+
+  # Búsqueda de trabajo (últimos 30 días). 1=Sí, 2=No salvo que se indique otra cosa.
+  PP02C1:
+    1: Sí  # Hizo contactos/entrevistas
+    2: No
+  PP02C2:
+    1: Sí  # Envió CV / avisos (diarios, internet)
+    2: No
+  PP02C3:
+    1: Sí  # Se presentó en establecimientos
+    2: No
+  PP02C4:
+    1: Sí  # Hizo algo para ponerse por su cuenta
+    2: No
+  PP02C5:
+    1: Sí  # Puso carteles / preguntó en el barrio
+    2: No
+  PP02C6:
+    1: Sí  # Consultó parientes/amigos
+    2: No
+  PP02C7:
+    1: Sí  # Bolsas/planes/agencias/contratistas o alguien le busca
+    2: No
+  PP02C8:
+    1: Sí  # Otra forma activa
+    2: No
+
+  PP02E:
+    1: Suspendido
+    2: Ya tiene trabajo asegurado
+    3: Se cansó de buscar
+    4: Poco trabajo en esta época
+    5: Otras razones
+
+  PP02H:
+    1: Sí  # Buscó en los últimos 12 meses
+    2: No
+
+  PP02I:
+    1: Sí  # Trabajó en los últimos 12 meses
+    2: No
+
+  PP03C:
+    1: Un solo empleo/ocupación/actividad
+    2: Más de un empleo/ocupación/actividad
+
+  # PP03D: cantidad de ocupaciones (entero)
+
+  # PP3E_TOT / PP3F_TOT: horas trabajadas (enteros); no enumerar.
+
+  PP03G:
+    1: Sí  # Quería trabajar más horas
+    2: No
+
+  PP03H:
+    1: Podía trabajarlas esa semana
+    2: Podía empezar en dos semanas a más tardar
+    3: No podía trabajar más horas
+    9: Ns/Nr
+
+  PP03I:
+    1: Sí  # Buscó trabajar más horas (últimos 30 días)
+    2: No
+    9: Ns/Nr
+
+  PP03J:
+    1: Sí  # Buscó otro empleo además del/los actual/es
+    2: No
+    9: Ns/Nr
+
+  INTENSI:
+    1: Subocupación horaria demandante
+    2: Subocupación horaria no demandante
+    3: Ocupación plena
+    4: Sobreocupación horaria
+    5: Ocupado que no trabajó en la semana
+    9: Ns/Nr
+
+  PP04A:
+    1: Estatal
+    2: Privada
+    3: Otro tipo (especificar)
+
+  PP04B1:
+    1: Casa de familia  # Servicio doméstico en hogares particulares
+
+  # PP04B2: número de casas donde trabaja (entero)
+
+  # Antigüedad en el trabajo principal (casa con más horas)
+  # PP04B3_MES / PP04B3_ANO / PP04B3_DIA: enteros; no enumerar.
+
+  PP04C:
+    1: 1 persona
+    2: 2 personas
+    3: 3 personas
+    4: 4 personas
+    5: 5 personas
+    6: 6 a 10 personas
+    7: 11 a 25 personas
+    8: 26 a 40 personas
+    9: 41 a 100 personas
+    10: 101 a 200 personas
+    11: 201 a 500 personas
+    12: Más de 500 personas
+    99: Ns/Nr
+
+  PP04B_COD:
+    __note__: "Código CAES/Mercosur de actividad (usar catálogo externo)."
+
+  PP04B_CAES:
+    __note__: "CAES-Mercosur 1.0 (vigente desde 2011T1). Usar catálogo externo."
+
+  PP04C99:
+    1: Hasta 5
+    2: 6 a 40
+    3: Más de 40
+    9: Ns/Nr
+
+  PP04D_COD:
+    __note__: "Código CNO 2001 de ocupación (usar catálogo externo)."
+
+  PP04G:
+    1: Local/oficina/establecimiento/negocio/taller/chacra/finca
+    2: Puesto o kiosco fijo callejero
+    3: Vehículos (bicicleta/moto/autos/barcos/botes; no transporte de personas)
+    4: Vehículo para transporte de personas/mercaderías (taxis, colectivos, camiones, etc.)
+    5: Obras (construcción/infraestructura/minería/similares)
+    6: En esta vivienda (sin lugar exclusivo)
+    7: En vivienda del socio o del patrón
+    8: Domicilio/local de los clientes
+    9: Calle/espacios públicos/ambulante/de casa en casa/puesto móvil
+    10: Otro lugar (especificar)
+
+  # Antigüedad en ocupación principal de independientes
+  # PP05B2_MES / PP05B2_ANO / PP05B2_DIA → enteros (no enumerar)
+
+  PP05C_1:
+    1: Propio (del negocio)
+    2: Prestado / alquilado
+    3: No tiene
+
+  PP05C_2:
+    1: Propio (del negocio)
+    2: Prestado / alquilado
+    3: No tiene
+
+  PP05C_3:
+    1: Propio (del negocio)
+    2: Prestado / alquilado
+    3: No tiene
+
+  PP05E:
+    1: Sí
+    2: No
+
+  PP05F:
+    6: Un solo cliente
+    7: Distintos clientes (incluye público en general)
+
+  PP05H:
+    1: Menos de 1 mes
+    2: 1 a 3 meses
+    3: Más de 3 a 6 meses
+    4: Más de 6 meses a 1 año
+    5: Más de 1 a 5 años
+    6: Más de 5 años
+    9: Ns/Nr
+
+  PP06A:
+    1: Sí
+    2: No
+
+  # PP06C / PP06D: montos de ingreso (numéricos)
+
+  PP06E:
+    1: Sociedad jurídicamente constituida (SA, SRL, etc.)
+    2: Sociedad de otra forma legal
+    3: Sociedad convenida de palabra
+
+  PP06H:
+    1: Sí
+    2: No
+
+  PP07A:
+    1: Menos de 1 mes
+    2: 1 a 3 meses
+    3: Más de 3 a 6 meses
+    4: Más de 6 a 12 meses
+    5: Más de 1 a 5 años
+    6: Más de 5 años
+    9: Ns/Nr
+
+  PP07C:
+    1: Sí (incluye changa, transitorio, por obra, suplencia, etc.)
+    2: No (permanente, fijo, estable, planta)
+    9: Ns/Nr
+
+  PP07D:
+    1: Sólo fue esa vez / cuando lo llaman
+    2: Hasta 3 meses
+    3: Más de 3 a 6 meses
+    4: Más de 6 a 12 meses
+    5: Más de 1 año
+    9: Ns/Nr
+
+  PP07E:
+    1: Plan de empleo
+    2: Período de prueba
+    3: Beca / pasantía / aprendizaje
+    4: Ninguno de éstos
+
+  PP07F1:
+    1: Sí
+    2: No
+  PP07F2:
+    1: Sí
+    2: No
+  PP07F3:
+    1: Sí
+    2: No
+  PP07F4:
+    1: Sí
+    2: No
+  PP07F5:
+    5: Sí  # No recibe ninguno
+
+  PP07G1:
+    1: Sí
+    2: No
+  PP07G2:
+    1: Sí
+    2: No
+  PP07G3:
+    1: Sí
+    2: No
+  PP07G4:
+    1: Sí
+    2: No
+  PP07G_59:
+    5: Sí  # No tiene ninguno
+
+  PP07H:
+    1: Sí  # Descuento jubilatorio
+    2: No
+
+  PP07I:
+    1: Sí  # Aporta por sí mismo
+    2: No
+
+  PP07J:
+    1: De día (mañana/tarde)
+    2: De noche
+    3: Otro tipo (rotativo, guardias, etc.)
+
+  PP07K:
+    1: Recibo con sello/membrete/firma del empleador
+    2: Papel/recibo sin nada
+    3: Entrega factura
+    4: No le dan ni entrega nada
+    5: No cobra (trabajador sin pago / ad-honorem)
+
+  # Ingresos ocupación principal asalariados
+  # PP08D1 / PP08D4 / PP08F1 / PP08F2 / PP08J1 / PP08J2 / PP08J3 → montos (numéricos)
+
+  PP09A:
+    1: Ciudad de Buenos Aires
+    2: Partidos del GBA
+    3: Ambos
+    4: En otro lugar
+
+  PP09A_ESP: {}  # texto libre
+  PP09B:
+    1: Sí
+    2: No
+
+  PP09C:
+    1: En otro lugar de esta provincia
+    2: En otra provincia
+    3: En otro país
+
+  PP09C_ESP: {}  # texto libre
+
+  PP10A:
+    1: Menos de 1 mes
+    2: 1 a 3 meses
+    3: Más de 3 a 6 meses
+    4: Más de 6 a 12 meses
+    5: Más de 1 año
+
+  PP10C:
+    1: Sí
+    2: No
+
+  PP10D:
+    1: Sí
+    2: No
+
+  PP10E:
+    1: Menos de 1 mes
+    2: 1 a 3 meses
+    3: Más de 3 a 6 meses
+    4: Más de 6 a 12 meses
+    5: Más de 1 a 3 años
+    6: Más de 3 años
+
+  PP11A:
+    1: Estatal
+    2: Privada
+    3: Otro tipo
+
+  PP11B_COD: {}   # código CAES-MERCOSUR
+  PP11B1:
+    1: Casa de familia
+
+  # PP11B2_MES / ANO / DIA → enteros
+
+  PP11B_CAES: {}  # código CAES-MERCOSUR 1.0
+
+  PP11C:
+    1: 1 persona
+    2: 2 personas
+    3: 3 personas
+    4: 4 personas
+    5: 5 personas
+    6: 6 a 10 personas
+    7: 11 a 25 personas
+    8: 26 a 40 personas
+    9: 41 a 100 personas
+    10: 101 a 200 personas
+    11: 201 a 500 personas
+    12: Más de 500 personas
+    99: Ns/Nr
+
+  PP11C99:
+    1: Hasta 5
+    2: De 6 a 40
+    3: Más de 40
+    9: Ns/Nr
+
+  PP11D_COD: {}  # código CNO 2001
+
+  # PP11G_ANO / MES / DIA → enteros
+
+  PP11L:
+    1: Falta de clientes / impagos
+    2: Falta de capital / equipamiento
+    3: Trabajo estacional
+    4: Gastos demasiado altos
+    5: Otras causas laborales
+    6: Jubilación / retiro
+    7: Causas personales (matrimonio, embarazo, cuidado, estudio, enfermedad)
+
+  PP11L1:
+    1: Trabajo transitorio/changa/obra/suplencia
+    2: Trabajo permanente/estable/planta
+    3: Ns/Nr
+
+  PP11M:
+    1: Plan de empleo
+    2: Período de prueba
+    3: Otro tipo de trabajo
+
+  PP11N:
+    1: Sí
+    2: No
+    9: Ns/Nr
+
+  PP11O:
+    1: Despido / cierre / quiebra / traslado / recorte
+    2: Retiro voluntario sector público
+    3: Jubilación
+    4: Fin de trabajo temporario/estacional
+    5: Mal pago / no pago
+    6: Malas condiciones laborales / insalubre / horarios
+    7: Renuncia obligada/pactada
+    8: Otras causas laborales
+    9: Causas personales (matrimonio, embarazo, cuidado, estudio, enfermedad)
+
+  PP11P:
+    1: Sí
+    2: No
+    9: Ns/Nr
+
+  PP11Q:
+    1: Sí
+    2: No
+    9: Ns/Nr
+
+  PP11R:
+    1: Sí
+    2: No
+
+  PP11S:
+    1: Sí
+    2: No
+
+  PP11T:
+    1: Sí
+    2: No
+    9: Ns/Nr
+
+  # Ingresos de la ocupación principal
+  P21: {}  # monto numérico
+
+  # Deciles de ingreso de ocupación principal (00 = Sin Ingresos)
+  DECOCUR:
+    "00": Sin Ingresos
+  IDECOCUR:
+    "00": Sin Ingresos
+  RDECOCUR:
+    "00": Sin Ingresos
+  GDECOCUR:
+    "00": Sin Ingresos
+  PDECOCUR:
+    "00": Sin Ingresos
+  ADECOCUR:
+    "00": Sin Ingresos
+
+  # Ingresos de otras ocupaciones
+  TOT_P12: {}  # monto numérico
+
+  # Ingreso total individual
+  P47T: {}  # monto numérico
+
+  # Deciles de ingreso total individual (00 = Sin Ingresos)
+  DECINDR:
+    "00": Sin Ingresos
+  IDECINDR:
+    "00": Sin Ingresos
+  RDECINDR:
+    "00": Sin Ingresos
+  GDECINDR:
+    "00": Sin Ingresos
+  PDECINDR:
+    "00": Sin Ingresos
+  ADECINDR:
+    "00": Sin Ingresos
+
+  # Ingresos no laborales (montos numéricos)
+  V2_M:   {}  # Jubilación o pensión
+  V3_M:   {}  # Indemnización por despido
+  V4_M:   {}  # Seguro de desempleo
+  V5_M:   {}  # Subsidio o ayuda social (dinero)
+  V8_M:   {}  # Alquiler de propiedad
+  V9_M:   {}  # Ganancias de negocio en el que no trabajó
+  V10_M:  {}  # Intereses o rentas / inversiones
+  V11_M:  {}  # Beca de estudio
+  V12_M:  {}  # Cuotas de alimentos / ayuda en dinero de no convivientes
+  V18_M:  {}  # Otros ingresos en efectivo (limosnas, juegos de azar, etc.)
+  V19_AM: {}  # Trabajo de menores de 10 años
+  V21_M:  {}  # Aguinaldo de la jubilación o pensión
+
+  T_VI: {}  # Total ingresos no laborales (monto numérico)
+
+  # Ingreso total familiar (en registro individual)
+  ITF: {}  # monto numérico
+
+  # Deciles de ingreso total familiar (00 = Sin Ingresos)
+  DECIFR:
+    "00": Sin Ingresos
+  IDECIFR:
+    "00": Sin Ingresos
+  RDECIFR:
+    "00": Sin Ingresos
+  GDECIFR:
+    "00": Sin Ingresos
+  PDECCFR:
+    "00": Sin Ingresos  # (sección IPCF/DECCFR en el diseño)
+  PDECIFR:
+    "00": Sin Ingresos
+  ADECIFR:
+    "00": Sin Ingresos
+
+  # Ingreso per cápita familiar
+  IPCF: {}  # monto numérico
+
+  # Deciles de ingreso per cápita familiar (00 = Sin Ingresos)
+  DECCFR:
+    "00": Sin Ingresos
+  IDECCFR:
+    "00": Sin Ingresos
+  RDECCFR:
+    "00": Sin Ingresos
+  GDECCFR:
+    "00": Sin Ingresos
+  PDECCFR:
+    "00": Sin Ingresos
+  ADECCFR:
+    "00": Sin Ingresos
+
+  # Plan Jefas y Jefes de Hogar (relevados hasta 2010T3)
+  Pj1_1:
+    1: Tiene plan Jefas Jefes
+  Pj2_1:
+    1: Tiene plan Jefas Jefes
+  Pj3_1:
+    1: Tiene plan Jefas Jefes
+
+  # Imputaciones en montos de ingresos (código compuesto de 5 dígitos)
+  IDIMPP:
+    "00000": Caso no imputado
+    # Estructura por dígitos (comentario):
+    # 1er dígito (Ocupación Principal - montos):
+    #   0: No imputado | 1: Monto en pesos imputado | 2: Bonos/tickets/comisión/propinas imputado
+    #   3: Pesos y bonos/tickets/comisión/propinas imputados
+    #   4: Ingreso de patrones/cuenta propia sin socios imputado
+    #   5: Ingreso de patrones/cuenta propia con socios imputado
+    # 2do dígito (Otros montos OP asalariados):
+    #   0: No imputado | 1: Aguinaldo imputado | 2: Bonif. no hab./retroactivos imputados
+    #   3: Aguinaldo y bonif./retroactivos imputados
+    # 3er dígito (Otras ocupaciones):
+    #   0: No imputado | 1: Monto de ingreso de otras ocupaciones imputado
+    # 4to dígito (Ingresos no laborales):
+    #   0: No imputado | 1: Jubilación/pensión imputado
+    #   2: Aguinaldo/retroactivo de jubilación, indemnización, seguro desempleo, subsidios,
+    #      alquiler, ganancias de negocio sin trabajar, intereses/rentas, beca, cuotas alimentos,
+    #      otros ingresos en efectivo y/o trabajo de menores imputados
+    #   3: Combinación de 1 y 2 imputados
+    #   4: Otros ingresos no laborales imputados
+    #   5: (1) y (4) imputados | 6: (2) y (4) imputados | 7: (1), (2) y (4) imputados

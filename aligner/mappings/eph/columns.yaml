@@ -1,0 +1,468 @@
+# mappings/eph/columns.yaml
+dataset: EPH
+version: 0.1
+
+io_defaults:
+  delimiter: ";"
+  encoding: "utf-8"
+  decimal: "."
+  header: true
+
+entities:
+
+  hogar:
+    keys: [CODUSU, NRO_HOGAR, ANO4, TRIMESTRE]
+
+    # — Core (intersección estable) —
+    # Nota: mantenemos la lista explícita para validación de presencia; tipos físicos se resuelven en el adapter.
+    core_columns:
+      - CODUSU
+      - ANO4
+      - TRIMESTRE
+      - NRO_HOGAR
+      - REALIZADA
+      - REGION
+      - MAS_500
+      - AGLOMERADO
+      - PONDERA
+      - IV1
+      - IV1_ESP
+      - IV2
+      - IV3
+      - IV3_ESP
+      - IV4
+      - IV5
+      - IV6
+      - IV7
+      - IV7_ESP
+      - IV8
+      - IV9
+      - IV10
+      - IV11
+      - IV12_1
+      - IV12_2
+      - IV12_3
+      - II1
+      - II2
+      - II3
+      - II3_1
+      - II4_1
+      - II4_2
+      - II4_3
+      - II5
+      - II5_1
+      - II6
+      - II6_1
+      - II7
+      - II7_ESP
+      - II8
+      - II8_ESP
+      - II9
+      - V1
+      - V2
+      - V3
+      - V4
+      - V6
+      - V7
+      - V8
+      - V9
+      - V10
+      - V12
+      - V13
+      - V14
+      - V15
+      - V16
+      - V17
+      - V18
+      - V19_A
+      - V19_B
+      - IX_TOT
+      - IX_MEN10
+      - IX_MAYEQ10
+      - ITF
+      - DECIFR
+      - IDECIFR
+      - RDECIFR
+      - GDECIFR
+      - PDECIFR
+      - ADECIFR
+      - IPCF
+      - DECCFR
+      - IDECCFR
+      - RDECCFR
+      - GDECCFR
+      - PDECCFR
+      - ADECCFR
+      - VII1_1
+      - VII1_2
+      - VII2_1
+      - VII2_2
+      - VII2_3
+      - VII2_4
+
+    # Campos que aparecen fuera del core en la era clásica
+    optional_classic: [V5, V11, V21, V22]
+
+    # Aliases de pesos para exponer un único lógico
+    aliases:
+      weight_hogar: [PONDIH, IDIMPH]  # preferencia por orden
+
+    # Familias “spliteadas” (2024Q4+ y el outlier t125)
+    families:
+      V2:
+        members: [V2_01, V2_02, V2_03]
+        mode: multi          # admite múltiples verdaderos
+        validate_suffixes: [01, 02, 03]
+      V5:
+        members: [V5_01, V5_02, V5_03]
+        mode: one_of         # exactamente uno
+        validate_suffixes: [01, 02, 03]
+      V11:
+        members: [V11_01, V11_02]
+        mode: one_of
+        validate_suffixes: [01, 02]
+      V21:
+        members: [V21_01, V21_02, V21_03]
+        mode: one_of
+        validate_suffixes: [01, 02, 03]
+      V22:
+        members: [V22_01, V22_02, V22_03]
+        mode: one_of
+        validate_suffixes: [01, 02, 03]
+
+    # Reglas de eras (detección y overrides)
+    eras:
+      classic_2003q3_2024q3:
+        applies:
+          not_has_any: [V2_01, V5_01, V11_01, V21_01, V22_01]
+        overrides:
+          optional_add: [V5, V11, V21, V22]
+          aliases:
+            weight_hogar: [PONDIH, IDIMPH]
+
+      expanded_2024q4_plus:
+        applies:
+          has_any: [V2_01, V5_01, V11_01, V21_01, V22_01]
+        overrides:
+          families_use: [V2, V5, V11, V21, V22]
+          aliases:
+            weight_hogar: [PONDIH, IDIMPH]
+
+      expanded_outlier_t125:
+        applies:
+          filename_in: [usu_hogar_t125.txt]
+        extends: expanded_2024q4_plus
+
+    validation:
+      require_core: true
+      # Si la era activa incluye families_use, validar sufijos
+      strict_family_suffixes: true
+
+
+  individual:
+    keys: [CODUSU, NRO_HOGAR, COMPONENTE, ANO4, TRIMESTRE]
+
+    # Core lógico (post-2016; lo usamos como contrato base)
+    core_columns:
+      - CODUSU
+      - ANO4
+      - TRIMESTRE
+      - NRO_HOGAR
+      - COMPONENTE
+      - H15
+      - REGION
+      - MAS_500
+      - AGLOMERADO
+      - PONDERA
+      - CH03
+      - CH04
+      - CH06
+      - CH07
+      - CH08
+      - CH09
+      - CH10
+      - CH11
+      - CH12
+      - CH13
+      - CH14
+      - CH15
+      - CH16
+      - NIVEL_ED
+      - ESTADO
+      - CAT_OCUP
+      - CAT_INAC
+      - PP02C1
+      - PP02C2
+      - PP02C3
+      - PP02C4
+      - PP02C5
+      - PP02C6
+      - PP02C7
+      - PP02C8
+      - PP02E
+      - PP02H
+      - PP02I
+      - PP03C
+      - PP03D
+      - PP3E_TOT
+      - PP3F_TOT
+      - PP03G
+      - PP03H
+      - PP03I
+      - PP03J
+      - INTENSI
+      - PP04A
+      - PP04B_COD
+      - PP04B1
+      - PP04B2
+      - PP04B3_MES
+      - PP04B3_ANO
+      - PP04B3_DIA
+      - PP04C
+      - PP04D_COD
+      - PP04G
+      - PP05B2_MES
+      - PP05B2_ANO
+      - PP05B2_DIA
+      - PP05C_1
+      - PP05C_2
+      - PP05C_3
+      - PP05E
+      - PP05F
+      - PP05H
+      - PP06A
+      - PP06C
+      - PP06D
+      - PP06E
+      - PP06H
+      - PP07A
+      - PP07C
+      - PP07D
+      - PP07E
+      - PP07F1
+      - PP07F2
+      - PP07F3
+      - PP07F4
+      - PP07F5
+      - PP07G1
+      - PP07G2
+      - PP07G3
+      - PP07G4
+      - PP07G_59
+      - PP07H
+      - PP07I
+      - PP07J
+      - PP07K
+      - PP08D1
+      - PP08D4
+      - PP08F1
+      - PP08F2
+      - PP08J1
+      - PP08J2
+      - PP08J3
+      - PP09A
+      - PP09B
+      - PP09C
+      - PP10A
+      - PP10C
+      - PP10D
+      - PP10E
+      - PP11A
+      - PP11B_COD
+      - PP11B1
+      - PP11B2_MES
+      - PP11B2_ANO
+      - PP11B2_DIA
+      - PP11C
+      - PP11C99
+      - PP11D_COD
+      - PP11G_ANO
+      - PP11G_MES
+      - PP11G_DIA
+      - PP11L
+      - PP11L1
+      - PP11M
+      - PP11N
+      - PP11O
+      - PP11P
+      - PP11Q
+      - PP11R
+      - PP11S
+      - PP11T
+      - P21
+      - DECOCUR
+      - IDECOCUR
+      - RDECOCUR
+      - GDECOCUR
+      - PDECOCUR
+      - ADECOCUR
+      - TOT_P12
+      - P47T
+      - DECINDR
+      - IDECINDR
+      - RDECINDR
+      - GDECINDR
+      - PDECINDR
+      - ADECINDR
+      - V3_M
+      - V4_M
+      - V8_M
+      - V9_M
+      - V10_M
+      - V12_M
+      - V18_M
+      - V19_AM
+      - T_VI
+      - ITF
+      - DECIFR
+      - IDECIFR
+      - RDECIFR
+      - GDECIFR
+      - PDECIFR
+      - ADECIFR
+      - IPCF
+      - DECCFR
+      - IDECCFR
+      - RDECCFR
+      - GDECCFR
+      - PDECCFR
+      - ADECCFR
+
+    # Pesos y variantes comunes fuera del core
+    weights:
+      primary: PONDERA
+      alternates: [PONDIIO, PONDII, PONDIH, IDIMPP]  # opcionales por era
+
+    # Familias CAES/COD/ESP que conviene reconocer
+    families_coding:
+      PP04B:
+        prefer: [PP04B_COD, PP04B_CAES]
+      PP11B:
+        prefer: [PP11B_COD, PP11B_CAES]
+
+    # Flags de módulo (clásicos) y versiones spliteadas (2024Q4+)
+    module_flags:
+      classic: [V2_M, V5_M, V11_M, V21_M, V22_M]
+      split:
+        V2_M:
+          members: [V2_01_M, V2_02_M, V2_03_M]
+          mode: multi
+          validate_suffixes: [01, 02, 03]
+        V5_M:
+          members: [V5_01_M, V5_02_M, V5_03_M]
+          mode: one_of
+          validate_suffixes: [01, 02, 03]
+        V11_M:
+          members: [V11_01_M, V11_02_M]
+          mode: one_of
+          validate_suffixes: [01, 02]
+        V21_M:
+          members: [V21_01_M, V21_02_M, V21_03_M]
+          mode: one_of
+          validate_suffixes: [01, 02, 03]
+        V22_M:
+          members: [V22_01_M, V22_02_M, V22_03_M]
+          mode: one_of
+          validate_suffixes: [01, 02, 03]
+
+    # Agregados paralelos nuevos (2024Q4+)
+    aggregates_parallel:
+      p_deccf: [P_DECCF, P_RDECCF, P_GDECCF, P_PDECCF, P_IDECCF, P_ADECCF]
+
+    eras:
+      pre_2011:
+        applies:
+          any_of:
+            - has_all: [PP04C99, PP09A_ESP, PP09C_ESP]
+            - has_any: [PONDIIO, PONDII]
+        overrides:
+          optional_add: [CH05, IMPUTA, CH15_COD, CH16_COD]
+          weights_alt_present: [PONDIIO, PONDII, PONDIH]
+
+      special_2011:
+        applies:
+          has_all: [PP04B_CAES, PP11B_CAES]
+          not_has_any: [PP04C99, PP09A_ESP, PP09C_ESP]
+        overrides:
+          optional_drop: [PP04C99, PP09A_ESP, PP09C_ESP]
+          optional_add: [IDIMPP]
+          families_coding_use:
+            PP04B: [PP04B_COD, PP04B_CAES]
+            PP11B: [PP11B_COD, PP11B_CAES]
+
+      classic_2012_2015:
+        applies:
+          period_range: {from: "2012Q1", to: "2015Q4"}
+        overrides: {}
+
+      post_2016_stable_2016q3_2024q3:
+        applies:
+          period_range: {from: "2016Q3", to: "2024Q3"}
+        overrides: {}
+
+      expanded_2024q4_plus:
+        applies:
+          has_any: [V2_01_M, PP10B1, P_DECCF]
+        overrides:
+          optional_drop: [PP09C_ESP]   # vuelve a faltar
+          optional_add:
+            - EMPLEO
+            - SECTOR
+            - PP02A
+            - PP02B
+            - PP02D
+            - PP02F
+            - PP02G
+            - PP03K
+            - PP04A1
+            - PP05B3
+            - PP05I
+            - PP05J
+            - PP05K
+            - PP06E1
+            - PP06K
+            - PP06K_SEM
+            - PP06K_MES
+            - PP06L
+            - PP07B1_01
+            - PP07F1_1
+            - PP07F1_2
+            - PP07F1_3
+            - PP07I2
+            - PP07I3
+            - PP07I4
+            - PP07L
+            - PP07M
+            - PP08G
+            - PP08G_DSEM
+            - PP08G_DMES
+            - PP08H
+            - PP10B1
+            - PP10B2
+            - PP10B3
+            - PP10B4
+            - PP10B5
+            - PP10B6
+            - PP10B7
+            - PP10B8
+            - PP10B9
+            - PP10B10
+            - PP11L2
+            - P_DECCF
+            - P_RDECCF
+            - P_GDECCF
+            - P_PDECCF
+            - P_IDECCF
+            - P_ADECCF
+          module_flags_use: split
+          aggregates_parallel_use: p_deccf
+
+    validation:
+      require_core: true
+      strict_family_suffixes: true
+      # reglas semánticas mínimas que puede aplicar el adapter:
+      semantics:
+        year_bounds: [1990, 2100]
+        quarter_bounds: [1, 4]
+
+# Fin del YAML

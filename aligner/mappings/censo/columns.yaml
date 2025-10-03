@@ -1,0 +1,111 @@
+# Column dtype mappings inferred from profiling (nullable=off; all had 0 nulls)
+# If future data contains nulls, switch these to pandas nullable (e.g., UInt16).
+
+CPV2010.csv:
+  delimiter: ";"
+  columns:
+    CPV2010_REF_ID: uint8   # single code; safe upper bound
+
+DPTO.csv:
+  delimiter: ";"
+  columns:
+    DPTO_REF_ID: uint16
+    PROV_REF_ID: uint8
+    IDDPTO: uint16
+    DPTO: uint32            # suggested uint32 by profiler; keep as-is
+    NOMDPTO: string
+
+FRAC.csv:
+  delimiter: ";"
+  columns:
+    FRAC_REF_ID: uint16
+    DPTO_REF_ID: uint16
+    IDFRAC: uint8
+
+HOGAR.csv:
+  delimiter: ";"
+  columns:
+    HOGAR_REF_ID: uint32
+    VIVIENDA_REF_ID: uint32
+    NHOG: uint16
+    H05: uint8
+    H06: uint8
+    H07: uint8
+    H08: uint8
+    H09: uint8
+    H10: uint8
+    H11: uint8
+    H12: uint8
+    H13: uint8
+    H14: uint8
+    H15: uint8
+    H16: uint8
+    H19A: uint8
+    H19B: uint8
+    H19C: uint8
+    H19D: uint8
+    PROP: uint8
+    INDHAC: uint8
+    TOTPERS: uint8
+    ALGUNBI: uint8
+
+PERSONA.csv:
+  delimiter: ";"
+  columns:
+    PERSONA_REF_ID: uint32
+    HOGAR_REF_ID: uint32
+    P01: uint8
+    P02: uint8
+    P03: uint8
+    P05: uint8
+    P06: uint16
+    P07: uint8
+    P12: uint8
+    EDADAGRU: uint8
+    EDADQUI: uint8
+    P08: uint8
+    P09: uint8
+    P10: uint8
+    CONDACT: uint8
+
+PERSONA_RADIO.csv:
+  delimiter: ","
+  columns:
+    PERSONA_REF_ID: uint32
+    HOGAR_REF_ID: uint32
+    CONDACT: uint8
+    VIVIENDA_REF_ID: uint32
+    RADIO_REF_ID: uint16
+
+PROV.csv:
+  delimiter: ";"
+  columns:
+    PROV_REF_ID: uint8
+    CPV2010_REF_ID: uint8
+    IDPROV: uint8
+    PROV: uint8
+    NOMPROV: string
+
+RADIO.csv:
+  delimiter: ";"
+  columns:
+    RADIO_REF_ID: uint16
+    FRAC_REF_ID: uint16
+    IDRADIO: uint8
+
+VIVIENDA.csv:
+  delimiter: ";"
+  columns:
+    VIVIENDA_REF_ID: uint32
+    RADIO_REF_ID: uint16
+    TIPVV: uint8
+    V01: uint8
+    V02: uint8
+    V00: uint8
+    URP: uint8
+    INCALSERV: uint8
+    INMAT: uint8
+    MUNI: uint32
+    LOCAL: uint32
+    INCALCONS: uint8
+    TOTHOG: uint8
