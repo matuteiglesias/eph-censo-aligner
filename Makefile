@@ -1,29 +1,24 @@
-
-# Auto-generated stub Makefile.
-# Purpose: provide a stable interface for portfolio governance.
-# Replace placeholder targets with real commands when ready.
-
-PROJECT := $(notdir $(CURDIR))
-
-.PHONY: help smoke run run_all
-
+PYTHON ?= python
+OUT ?= out/fixture-release
+.PHONY: help install check test smoke release-fixture clean
 help:
-	@echo "Project: $(PROJECT)"
-	@echo ""
-	@echo "Targets:"
-	@echo "  make smoke    - cheap, offline, bounded checks (placeholder by default)"
-	@echo "  make run_all  - full run pipeline (placeholder by default)"
-	@echo "  make run      - alias for run_all"
-
+	@printf '%s\n' 'install check test smoke release-fixture clean'
+install:
+	$(PYTHON) -m pip install --no-build-isolation -e '.[test]'
+check:
+	$(PYTHON) -m compileall -q aligner
+	$(PYTHON) -m json.tool aligner/mappings/registry.json >/dev/null
+	$(PYTHON) -m json.tool aligner/compatibility.json >/dev/null
+	$(PYTHON) -m aligner.cli --help >/dev/null
+test:
+	$(PYTHON) -m pytest -q
 smoke:
-	@echo "[SMOKE][$(PROJECT)] not implemented"
-	@echo "Define a minimal, offline, fixture-driven smoke check."
-	@exit 2
-
-run_all:
-	@echo "[RUN_ALL][$(PROJECT)] not implemented"
-	@echo "Define the full run (may require network, secrets, longer compute)."
-	@exit 2
-
-run: run_all
-
+	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; $(PYTHON) -m aligner.cli --direction eph-to-censo --entity hogar --input fixtures/eph/hogar.csv --region fixtures/regions.csv --source-vintage fixture-v1 --output-dir $$tmp/eph; $(PYTHON) -m aligner.integration $$tmp/eph/manifest.json --expected-vintage fixture-v1; $(PYTHON) -m aligner.cli --direction censo-to-eph --entity hogar --input fixtures/censo/hogar.csv --region fixtures/regions.csv --source-vintage fixture-v1 --output-dir $$tmp/censo; $(PYTHON) -m aligner.integration $$tmp/censo/manifest.json --expected-vintage fixture-v1
+release-fixture:
+	rm -rf $(OUT)
+	$(PYTHON) -m aligner.cli --direction eph-to-censo --entity hogar --input fixtures/eph/hogar.csv --region fixtures/regions.csv --source-vintage fixture-v1 --release-id fixture-v1 --output-dir $(OUT)/eph-to-censo
+	$(PYTHON) -m aligner.cli --direction censo-to-eph --entity hogar --input fixtures/censo/hogar.csv --region fixtures/regions.csv --source-vintage fixture-v1 --release-id fixture-v1 --output-dir $(OUT)/censo-to-eph
+	$(PYTHON) -m aligner.integration $(OUT)/eph-to-censo/manifest.json --expected-vintage fixture-v1
+	$(PYTHON) -m aligner.integration $(OUT)/censo-to-eph/manifest.json --expected-vintage fixture-v1
+clean:
+	rm -rf out

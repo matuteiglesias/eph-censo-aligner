@@ -18,22 +18,32 @@ authority:
   - synthetic population product
 interfaces:
   consumes:
-  - artifact:publicdata.eph-microdata@1
+  - artifact:research.eph-source@1
+  - artifact:research.census-source@1
+  - artifact:research.census-geography@1 (optional)
   produces:
   - artifact:research.eph-census-crosswalk@1
+  manifest_schema: research-artifact-manifest/v1
+  compatibility: aligner/compatibility.json
 upstream:
 - repo.microdatos-eph-indec
 downstream:
 - repo.income-modeling-eph
-canonical_commands: []
+canonical_commands:
+- make check
+- make test
+- make smoke
+- make release-fixture
 generated_paths:
 - out/
 verification:
-  status: metadata-only
+  status: fixture-implemented-runtime-pending
   last_verified: '2026-08-04'
-  command: null
+  command: make check && make test && make smoke && make release-fixture
+  supported_vintages:
+  - fixture-v1
   unknowns:
-  - canonical test command and supported vintages require local confirmation
+  - all real EPH and Census source vintages require evidence and methodological approval
 maintenance:
   cadence: annual
   next_review: '2027-08-01'
