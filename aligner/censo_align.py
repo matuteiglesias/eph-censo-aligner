@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 
 # Reutilizamos utilidades existentes
-from utils import (
+from .utils import (
     rename_columns, collapse_family_multi_any,
     apply_recode, clip_columns, join_region_by_dpto, apply_overrides,
     validate_required, conditional_set, cast_numeric

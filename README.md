@@ -2,7 +2,7 @@
 
 Alineador bidireccional para expresar variables seleccionadas de la Encuesta Permanente de Hogares (EPH) y del Censo Nacional bajo un contrato común y reglas de recodificación explícitas.
 
-> **Estado:** candidato a mantenimiento. El paquete, la CLI, los mappings y los tests fueron construidos y sincronizados en 2025; las fuentes, vintages y pruebas no fueron revalidados en un entorno limpio durante esta actualización del README.
+> **Estado:** release de mapping v1, probado únicamente contra el vintage sintético `fixture-v1`. Ningún vintage real de EPH o Censo está soportado hasta completar revisión metodológica.
 
 ## Por qué existe
 
@@ -34,40 +34,61 @@ tests/               pruebas unitarias
 notas.md              decisiones metodológicas
 ```
 
-## Uso mínimo
-
-Desde Python:
-
-```python
-import pandas as pd
-from aligner.eph_align import harmonize_hogar
-
-raw = pd.read_csv("EPH.csv")
-aligned = harmonize_hogar(raw)
-aligned.to_csv("EPH_aligned.csv", index=False)
-```
-
-Desde CLI:
+## Instalación y comandos
 
 ```bash
-python -m aligner.cli \
-  --source eph \
-  --target censo \
-  --input EPH.csv \
-  --output aligned.csv
+make install
+make check
+make test
+make smoke
+make release-fixture
 ```
 
-Antes de usarlo sobre datos nuevos, revisar los flags disponibles en `aligner/cli.py` y los mappings aplicables al vintage de entrada.
-
-## Validación
-
-El repositorio incluye tests para el CDM y ambos sentidos de transformación. Una revisión de mantenimiento debería ejecutar:
+La CLI real exige dirección, entidad, input, directorio de release y vintage:
 
 ```bash
-pytest
+python -m aligner.cli --direction eph-to-censo --entity hogar \
+  --input fixtures/eph/hogar.csv --region fixtures/regions.csv \
+  --source-vintage fixture-v1 --release-id fixture-v1 --output-dir out/release
 ```
 
-y además comprobar invariantes del dataset real: columnas esperadas, dominios, cobertura, duplicados y pérdidas introducidas por cada recodificación.
+Cada directorio contiene `aligned.csv`, `variable-report.json`, `loss-report.json`,
+`compatibility.json` y `manifest.json`. El manifest usa el envelope compartido
+`research-artifact-manifest/v1`; declara productor, commit/estado del worktree,
+vintage, método, inputs, archivos con tamaño y SHA-256, informes y limitaciones.
+Las filas se ordenan por identificadores disponibles; los identificadores se
+preservan y encabezan un orden de columnas estable. JSON usa claves ordenadas y
+CSV usa LF y vacío para null.
+
+Las reglas de ida y vuelta son entradas independientes: el sistema nunca invierte
+automáticamente un colapso o condicional. Antes de ejecutar valida prioridad,
+unicidad y composición explícita. El informe de pérdida reconcilia toda fila de
+entrada en una sola disposición terminal (`emitted`, `removed`, `invalid`,
+`unsupported`, `unmatched` o `failed`).
+
+## Vintages y revisión
+
+El registro máquina-legible es `aligner/mappings/registry.json`. Sólo `fixture-v1` está soportado en ambas direcciones; todos los vintages reales son desconocidos/no soportados. Los colapsos, condicionales, cambios de muestra y overrides geográficos siguen `pending`; consultar `docs/MAPPING_REVIEW_REQUIRED.md`. Esto es una traducción inspeccionable, no una declaración de equivalencia estadística.
+
+## Integración opcional por artefacto
+
+Este repositorio **no** forma parte obligatoria de cada corrida de modelos. Un
+consumidor usa una copia inmutable del directorio de release sólo cuando necesita
+armonización EPH/Censo; no ejecuta este repositorio ni lee un checkout hermano.
+Puede validar el artefacto antes del preprocessing, sin cargar pandas:
+
+```bash
+python -m aligner.integration path/to/release/manifest.json \
+  --mode synthetic --expected-vintage fixture-v1 \
+  --geography-identifier-contract research.argentina-dpto/v1
+```
+
+La declaración `compatibility.json` publica el contrato de artefacto
+`research.eph-census-crosswalk/v1`, el contrato consumidor y la política que
+rechaza crosswalks sintéticos en corridas reales o releases pendientes en modo
+aprobado. La fixture que prueba crosswalk opcional, procedencia anual y la
+composición con releases de fuente/geografía corresponde al repositorio consumidor
+`income-modeling-eph`; no se crea aquí una dependencia runtime distribuida.
 
 ## Autoridad y límites
 

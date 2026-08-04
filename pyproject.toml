@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "eph-censo-aligner"
+version = "1.0.0"
+requires-python = ">=3.10"
+dependencies = ["pandas>=2.0,<3", "numpy>=1.24,<3"]
+[project.optional-dependencies]
+test = ["pytest>=7,<9"]
+[project.scripts]
+crosswalk-release = "aligner.cli:main"
+crosswalk-validate = "aligner.integration:main"
+[tool.pytest.ini_options]
+testpaths = ["tests"]

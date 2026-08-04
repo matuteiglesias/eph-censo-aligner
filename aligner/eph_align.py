@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 
 
-from utils import filter_rows, rename_columns, collapse_family_one_of, collapse_family_multi_any, apply_recode, clip_columns, join_region_by_dpto, apply_overrides, validate_required, conditional_set, cast_numeric
+from .utils import filter_rows, rename_columns, collapse_family_one_of, collapse_family_multi_any, apply_recode, clip_columns, join_region_by_dpto, apply_overrides, validate_required, conditional_set, cast_numeric
 
 
 # ------------------------------------
@@ -74,10 +74,16 @@ def harmonize_hogar(
     if 'IV1' in out.columns:
         out = filter_rows(out, FILTERS_HOGAR)
 
-    # B) rename al subset Censo
+    # B) Recode source-named values before rename.  Rules whose keys are
+    # Census names belong to the independently governed reverse direction and
+    # must never be applied by mechanically inverting that registry.
+    source_recodes = {k: v for k, v in RECODE_HOGAR.items() if k in CROSSWALK_EPH_TO_CENSO}
+    out = apply_recode(out, source_recodes)
+
+    # C) rename al subset Censo
     out = rename_columns(out, CROSSWALK_EPH_TO_CENSO)
 
-    # C) families.collapse (si existen variantes split en hogar)
+    # D) families.collapse (si existen variantes split en hogar)
     #   Conviene colapsar antes de recodificar valores.
     #   One-of:
     out = collapse_family_one_of(out, "V21", "V21")
@@ -87,11 +93,10 @@ def harmonize_hogar(
     #   Multi:
     out = collapse_family_multi_any(out, "V2", "V2")
 
-    # D) recodes y clips
-    out = apply_recode(out, RECODE_HOGAR)
+    # E) clips
     out = clip_columns(out, CLIP_HOGAR)
 
-    # E) join + overrides (Region por DPTO; ajustes AGLO 33/93)
+    # F) join + overrides (Region por DPTO; ajustes AGLO 33/93)
     if region_df is not None:
         out = join_region_by_dpto(out, region_df, on="DPTO", take="Region", into="Region")
         out = apply_overrides(out, [
@@ -99,11 +104,11 @@ def harmonize_hogar(
             ({"AGLOMERADO": 93, "Region": "Pampeana"}, {"Region": "Patagónica"}),
         ])
 
-    # F) types: columnas monetarias que uses desde hogar (si aplica)
+    # G) types: columnas monetarias que uses desde hogar (si aplica)
     # (en tu subset monetario están mayormente en individual; dejamos hook)
     # out = cast_numeric(out, SOME_HOME_MON_COLS)
 
-    # G) validate
+    # H) validate
     validate_required(out, ['IX_TOT', 'P02', 'P03', 'CONDACT', 'AGLOMERADO'], where="hogar")
 
     return out
@@ -153,7 +158,11 @@ def harmonize_individual(
     # F) types (asegurar numéricos en col_mon)
     out = cast_numeric(out, COL_MON)
 
-    # G) validate (mínimos para tu subset)
-    validate_required(out, ['CODUSU', 'CH06', 'CH09', 'CONDACT'], where="individual")
+    # G) Rename only after source-side recodes and conditions.  The reverse
+    # direction has its own registry rules and is not synthesized from these.
+    out = rename_columns(out, CROSSWALK_EPH_TO_CENSO)
+
+    # H) validate (mínimos expresados en el contrato destino)
+    validate_required(out, ['CODUSU', 'P03', 'P07', 'CONDACT'], where="individual")
 
     return out

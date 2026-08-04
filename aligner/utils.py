@@ -29,7 +29,7 @@ def collapse_family_one_of(
     Si prefer_first=True, devuelve el primer sufijo 'activo'.
     """
     pat = re.compile(rf"^{re.escape(family_prefix)}_(\w+)$")
-    members = [c for c in df.columns if pat.match(c)]
+    members = sorted(c for c in df.columns if pat.match(c))
     if not members:
         return df
 
@@ -68,7 +68,7 @@ def collapse_family_multi_any(
     Si preferís booleano: reemplazá la lista por .any().
     """
     pat = re.compile(rf"^{re.escape(family_prefix)}_(\w+)$")
-    members = [c for c in df.columns if pat.match(c)]
+    members = sorted(c for c in df.columns if pat.match(c))
     if not members:
         return df
 

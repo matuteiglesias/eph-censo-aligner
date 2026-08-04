@@ -1,0 +1,32 @@
+{
+  "artifact_contract": "research.eph-census-crosswalk/v1",
+  "compatibility_schema": "research-artifact-compatibility/v1",
+  "consumer_contract": "research.eph-preprocessing/v1",
+  "geography_identifier_contract": "research.argentina-dpto/v1",
+  "release_policy": {
+    "approved_mode_allowed_statuses": [
+      "reviewed",
+      "approved"
+    ],
+    "real_run_allows_synthetic": false,
+    "required_reviewer_status_for_approved_mode": "approved"
+  },
+  "supported_inputs": {
+    "census_source_manifest": {
+      "schema": "research.census-source/v1",
+      "vintages": [
+        "fixture-v1"
+      ]
+    },
+    "eph_source_manifest": {
+      "schema": "research.eph-source/v1",
+      "vintages": [
+        "fixture-v1"
+      ]
+    },
+    "geography": {
+      "required": false,
+      "supported_contract": "research.census-geography/v1"
+    }
+  }
+}
