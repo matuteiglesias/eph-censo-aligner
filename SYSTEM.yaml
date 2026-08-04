@@ -1,0 +1,39 @@
+# This file declares the repository boundary and its place in the GitHub estate.
+schema_version: 1
+id: research.eph-census.align
+repository:
+  id: repo.eph-censo-aligner
+  github: matuteiglesias/eph-censo-aligner
+domain: research
+system: research.eph-census
+role: harmonization-component
+lifecycle: maintenance
+authority:
+  status: proposed
+  owns:
+  - EPH-to-Census mappings, validation, and alignment outputs
+  does_not_own:
+  - raw EPH acquisition
+  - income model ownership
+  - synthetic population product
+interfaces:
+  consumes:
+  - artifact:publicdata.eph-microdata@1
+  produces:
+  - artifact:research.eph-census-crosswalk@1
+upstream:
+- repo.microdatos-eph-indec
+downstream:
+- repo.income-modeling-eph
+canonical_commands: []
+generated_paths:
+- out/
+verification:
+  status: metadata-only
+  last_verified: '2026-08-04'
+  command: null
+  unknowns:
+  - canonical test command and supported vintages require local confirmation
+maintenance:
+  cadence: annual
+  next_review: '2027-08-01'
