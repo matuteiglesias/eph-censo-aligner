@@ -1,35 +1,35 @@
 # EPH ↔ Censo Aligner
 
-Alineador bidireccional para expresar variables seleccionadas de la Encuesta Permanente de Hogares (EPH) y del Censo Nacional bajo un contrato común y reglas de recodificación explícitas.
+Alineador semántico bidireccional para expresar variables seleccionadas de la Encuesta Permanente de Hogares (EPH) y del Censo bajo contratos comunes y reglas de recodificación explícitas.
 
-> **Estado:** release de mapping v1, probado únicamente contra el vintage sintético `fixture-v1`. Ningún vintage real de EPH o Censo está soportado hasta completar revisión metodológica.
+> **Estado:** release de alineación v1 probado únicamente con el vintage sintético `fixture-v1`. Ningún vintage real de EPH o Censo está soportado hasta completar revisión metodológica.
 
-## Por qué existe
+## Qué problema resuelve
 
-EPH y Censo describen personas y hogares con coberturas, preguntas y códigos diferentes. Este repositorio hace esas diferencias **visibles y ejecutables** mediante:
+EPH y Censo describen personas y hogares con coberturas, preguntas, universos y códigos diferentes. Este repositorio vuelve esas diferencias **visibles, versionadas y ejecutables** mediante renombres, recodificaciones de valores, colapsos de familias de variables, reglas condicionales, validaciones y excepciones documentadas.
 
-- renombre de columnas;
-- crosswalks de valores;
-- colapso de familias de variables;
-- reglas condicionales;
-- joins geográficos y excepciones documentadas;
-- casteo y validaciones básicas.
+La salida es una **alineación semántica inspeccionable**. No implica equivalencia estadística, intercambiabilidad de fuentes ni validez de un modelo entrenado en una fuente para inferir sobre la otra.
 
-El objetivo es producir tablas comparables para tareas posteriores, no afirmar que ambas fuentes sean estadística o conceptualmente equivalentes.
+### Alineación semántica no es crosswalk geográfico
+
+En documentación nueva usamos *alineación semántica EPH↔Censo* para este producto. El identificador histórico `research.eph-census-crosswalk/v1` se conserva por compatibilidad de artefactos, pero no debe interpretarse como un crosswalk territorial ni como asignación de una geografía a otra. Las relaciones geográficas son otra clase de problema y otra autoridad.
 
 ## Superficie principal
 
 ```text
 aligner/
   cdm.py             contrato mínimo de datos
-  eph_align.py       EPH → contrato tipo Censo
-  censo_align.py     Censo → contrato tipo EPH
+  eph_align.py       EPH → contrato común
+  censo_align.py     Censo → contrato común
   cli.py             interfaz de línea de comando
   io.py              lectura de datos y mappings
   utils.py           transformaciones reutilizables
   validate.py        controles de integridad
   mappings/          columnas, valores y excepciones
 
+docs/DEPLOYMENT_FEATURE_PLANE.md
+                     vocabulario para auditar qué variables podrían formar
+                     una futura superficie model-facing desplegable
 tests/               pruebas unitarias
 notas.md              decisiones metodológicas
 ```
@@ -44,7 +44,7 @@ make smoke
 make release-fixture
 ```
 
-La CLI real exige dirección, entidad, input, directorio de release y vintage:
+Ejemplo sintético:
 
 ```bash
 python -m aligner.cli --direction eph-to-censo --entity hogar \
@@ -52,30 +52,17 @@ python -m aligner.cli --direction eph-to-censo --entity hogar \
   --source-vintage fixture-v1 --release-id fixture-v1 --output-dir out/release
 ```
 
-Cada directorio contiene `aligned.csv`, `variable-report.json`, `loss-report.json`,
-`compatibility.json` y `manifest.json`. El manifest usa el envelope compartido
-`research-artifact-manifest/v1`; declara productor, commit/estado del worktree,
-vintage, método, inputs, archivos con tamaño y SHA-256, informes y limitaciones.
-Las filas se ordenan por identificadores disponibles; los identificadores se
-preservan y encabezan un orden de columnas estable. JSON usa claves ordenadas y
-CSV usa LF y vacío para null.
+Cada directorio contiene `aligned.csv`, `variable-report.json`, `loss-report.json`, `compatibility.json` y `manifest.json`. El manifest usa `research-artifact-manifest/v1` y fija productor, commit/estado del worktree, vintage, método, inputs, archivos, SHA-256, informes y limitaciones.
 
-Las reglas de ida y vuelta son entradas independientes: el sistema nunca invierte
-automáticamente un colapso o condicional. Antes de ejecutar valida prioridad,
-unicidad y composición explícita. El informe de pérdida reconcilia toda fila de
-entrada en una sola disposición terminal (`emitted`, `removed`, `invalid`,
-`unsupported`, `unmatched` o `failed`).
+Las reglas de ida y vuelta son independientes: el sistema nunca invierte automáticamente un colapso o condicional. El informe de pérdida reconcilia toda fila de entrada en una disposición terminal (`emitted`, `removed`, `invalid`, `unsupported`, `unmatched` o `failed`).
 
 ## Vintages y revisión
 
-El registro máquina-legible es `aligner/mappings/registry.json`. Sólo `fixture-v1` está soportado en ambas direcciones; todos los vintages reales son desconocidos/no soportados. Los colapsos, condicionales, cambios de muestra y overrides geográficos siguen `pending`; consultar `docs/MAPPING_REVIEW_REQUIRED.md`. Esto es una traducción inspeccionable, no una declaración de equivalencia estadística.
+El registro máquina-legible es `aligner/mappings/registry.json`. Sólo `fixture-v1` está soportado en ambas direcciones. Todos los vintages reales siguen desconocidos/no soportados; colapsos, condicionales, cambios de muestra y overrides geográficos pendientes requieren revisión humana. Ver `docs/MAPPING_REVIEW_REQUIRED.md`.
 
-## Integración opcional por artefacto
+## Integración por artefacto
 
-Este repositorio **no** forma parte obligatoria de cada corrida de modelos. Un
-consumidor usa una copia inmutable del directorio de release sólo cuando necesita
-armonización EPH/Censo; no ejecuta este repositorio ni lee un checkout hermano.
-Puede validar el artefacto antes del preprocessing, sin cargar pandas:
+Un consumidor usa una copia inmutable de una release cuando necesita alineación semántica; no necesita ejecutar este repositorio ni leer un checkout hermano. Puede validar el artefacto antes del preprocessing:
 
 ```bash
 python -m aligner.integration path/to/release/manifest.json \
@@ -83,36 +70,14 @@ python -m aligner.integration path/to/release/manifest.json \
   --geography-identifier-contract research.argentina-dpto/v1
 ```
 
-La declaración `compatibility.json` publica el contrato de artefacto
-`research.eph-census-crosswalk/v1`, el contrato consumidor y la política que
-rechaza crosswalks sintéticos en corridas reales o releases pendientes en modo
-aprobado. La fixture que prueba crosswalk opcional, procedencia anual y la
-composición con releases de fuente/geografía corresponde al repositorio consumidor
-`income-modeling-eph`; no se crea aquí una dependencia runtime distribuida.
+`compatibility.json` conserva por compatibilidad el tipo de artefacto `research.eph-census-crosswalk/v1`. Esa etiqueta histórica no amplía el alcance científico del producto.
 
 ## Autoridad y límites
 
-Este repositorio posee:
+Este repositorio posee las reglas versionadas de correspondencia semántica, sus validaciones, reportes de pérdida/ambigüedad y releases de alineación.
 
-- el contrato mínimo utilizado por el alineador;
-- los mappings versionados;
-- las reglas de transformación y validación.
+No posee la definición oficial de las variables fuente, los microdatos, geografía argentina, modelos de ingreso, ejecución de inferencia sobre muestras Census ni una garantía de transporte estadístico entre EPH y Censo.
 
-No posee:
+## Próximo trabajo sustantivo
 
-- la definición oficial de las variables de EPH o Censo;
-- los microdatos fuente;
-- una garantía de equivalencia entre conceptos;
-- la metodología de inferencia de un producto downstream.
-
-Cada output debería conservar el vintage de las fuentes y la versión de los mappings utilizados.
-
-## Próxima revisión útil
-
-1. fijar dependencias e instalación reproducible;
-2. asociar cada mapping con un vintage de EPH/Censo;
-3. agregar fixtures pequeños representativos;
-4. documentar pérdidas o ambigüedades por variable;
-5. conectar el output con un consumidor real antes de ampliar el alcance.
-
-El nombre actual describe bien el producto; no se recomienda renombrarlo.
+Antes de habilitar vintages reales, la siguiente tarea es auditar una superficie mínima de variables usando las categorías documentadas en `docs/DEPLOYMENT_FEATURE_PLANE.md`. Ese documento sólo define vocabulario y gates: **no aprueba ninguna variable ni vintage real**.
