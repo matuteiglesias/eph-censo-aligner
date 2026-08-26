@@ -6,22 +6,28 @@ repository:
   github: matuteiglesias/eph-censo-aligner
 domain: research
 system: research.eph-census
-role: harmonization-component
+role: semantic-alignment-component
 lifecycle: maintenance
 authority:
   status: proposed
   owns:
-  - EPH-to-Census mappings, validation, and alignment outputs
+  - versioned EPH-to-Census and Census-to-EPH semantic mappings
+  - validation, loss/ambiguity reporting and alignment outputs
+  - vocabulary for declaring model-facing deployment observability
   does_not_own:
-  - raw EPH acquisition
-  - income model ownership
-  - synthetic population product
+  - raw EPH or Census acquisition
+  - Argentine geography authority or geographic crosswalks
+  - income model ownership or model selection
+  - Census sample inference execution
+  - statistical transport claims between EPH and Census
 interfaces:
   consumes:
   - artifact:research.eph-source@1
   - artifact:research.census-source@1
-  - artifact:research.census-geography@1 (optional)
+  - artifact:research.census-geography@1 (optional identity input)
   produces:
+  # Historical artifact identifier retained for compatibility. Semantically this
+  # is a variable/alignment release, not a geographic crosswalk.
   - artifact:research.eph-census-crosswalk@1
   manifest_schema: research-artifact-manifest/v1
   compatibility: aligner/compatibility.json
@@ -29,6 +35,7 @@ upstream:
 - repo.microdatos-eph-indec
 downstream:
 - repo.income-modeling-eph
+- repo.sampler-censo-arg
 canonical_commands:
 - make check
 - make test
@@ -44,6 +51,7 @@ verification:
   - fixture-v1
   unknowns:
   - all real EPH and Census source vintages require evidence and methodological approval
+  - no deployment feature category is approved for real Census inference yet
 maintenance:
   cadence: annual
   next_review: '2027-08-01'
