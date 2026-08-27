@@ -1,0 +1,65 @@
+name: Scheduled semantic maturity gate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 11 * * 2"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-semantic-maturity
+  cancel-in-progress: false
+
+jobs:
+  maturity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --no-build-isolation -e '.[test]'
+
+      - name: Verify executable fixture boundary
+        run: |
+          make check
+          make test
+          make smoke
+
+      - name: Require at least one approved real-vintage mapping for mature transport
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          registry = json.loads(Path("aligner/mappings/registry.json").read_text(encoding="utf-8"))
+          mappings = registry.get("mappings", [])
+          approved_real = [
+              row for row in mappings
+              if row.get("source_vintage") not in {None, "fixture-v1"}
+              and row.get("reviewer_status") == "approved"
+          ]
+          if not approved_real:
+              print("::error::Fixture machinery is healthy, but no approved real-vintage semantic mapping is available. See issue #7.")
+              raise SystemExit(1)
+          print(f"Approved real-vintage mapping rows: {len(approved_real)}")
+          PY
+
+      - name: Summarize maturity state
+        if: always()
+        run: |
+          {
+            echo "## Scheduled semantic maturity"
+            echo
+            echo "This workflow intentionally separates two facts: fixture execution may be healthy while real EPH/Census semantic review is still incomplete."
+            echo
+            echo "A red final gate means the aligner is not yet eligible to feed consequential transport, even if its fixture tests are green."
+          } >> "$GITHUB_STEP_SUMMARY"
