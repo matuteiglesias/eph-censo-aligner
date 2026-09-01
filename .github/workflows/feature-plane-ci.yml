@@ -6,16 +6,22 @@ on:
     paths:
       - .github/workflows/feature-plane-ci.yml
       - aligner/feature_plane.py
+      - aligner/legacy_bridge_review.py
       - aligner/review_inventories/historical_staged_v1.json
+      - aligner/review_inventories/historical_staged_v1_legacy_bridge.json
       - tests/test_feature_plane.py
+      - tests/test_legacy_bridge_review.py
   push:
     branches:
       - main
     paths:
       - .github/workflows/feature-plane-ci.yml
       - aligner/feature_plane.py
+      - aligner/legacy_bridge_review.py
       - aligner/review_inventories/historical_staged_v1.json
+      - aligner/review_inventories/historical_staged_v1_legacy_bridge.json
       - tests/test_feature_plane.py
+      - tests/test_legacy_bridge_review.py
 
 permissions:
   contents: read
@@ -37,10 +43,20 @@ jobs:
       - name: Install bounded test tools
         run: python -m pip install pytest ruff
       - name: Lint feature-plane boundary
-        run: ruff check aligner/feature_plane.py tests/test_feature_plane.py
-      - name: Verify feature-plane boundary
-        run: pytest -q tests/test_feature_plane.py
-      - name: Compile review artifact
         run: >-
-          python -m aligner.feature_plane
-          --output /tmp/historical_staged_v1_feature_plane.json
+          ruff check
+          aligner/feature_plane.py
+          aligner/legacy_bridge_review.py
+          tests/test_feature_plane.py
+          tests/test_legacy_bridge_review.py
+      - name: Verify feature-plane boundary
+        run: >-
+          pytest -q
+          tests/test_feature_plane.py
+          tests/test_legacy_bridge_review.py
+      - name: Compile review artifacts
+        run: |
+          python -m aligner.feature_plane \
+            --output /tmp/historical_staged_v1_feature_plane.json
+          python -m aligner.legacy_bridge_review \
+            --output /tmp/historical_staged_v1_legacy_bridge_gap.json
