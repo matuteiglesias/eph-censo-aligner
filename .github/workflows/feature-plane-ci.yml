@@ -24,6 +24,8 @@ jobs:
   semantic-review-plane:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PYTHONPATH: .
     strategy:
       matrix:
         python-version: ["3.10", "3.12"]
