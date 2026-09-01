@@ -1,0 +1,62 @@
+{
+  "schema": "research.transport-feature-inventory/v1",
+  "spec_id": "historical_staged_v1",
+  "inventory_status": "frozen_review_inventory",
+  "source": {
+    "repository": "matuteiglesias/encuestador-de-hogares",
+    "commit": "d2ba8bd713cce6a0cdc77cc0885bff5890036e45",
+    "path": "data/info/variables.py"
+  },
+  "notes": [
+    "This freezes the historical/default stage lists for semantic review; it does not approve them for Census scoring.",
+    "AGLO_rk and Reg_rk remain in the historical inventory as evidence but are forbidden as external Census inputs."
+  ],
+  "stages": [
+    {
+      "stage_id": "stage_1_labor_state",
+      "inputs": [
+        "IX_TOT", "P02", "P03", "AGLO_rk", "Reg_rk", "V01", "H05",
+        "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H16",
+        "H15", "PROP", "H14", "H13", "P07", "P08", "P09", "P10",
+        "P05", "CONDACT"
+      ],
+      "targets": ["CAT_OCUP", "CAT_INAC", "CH07"]
+    },
+    {
+      "stage_id": "stage_2_income_presence",
+      "inputs": [
+        "IX_TOT", "P02", "P03", "AGLO_rk", "Reg_rk", "V01", "H05",
+        "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H16",
+        "H15", "PROP", "H14", "H13", "P07", "P08", "P09", "P10",
+        "P05", "CONDACT", "CAT_OCUP", "CAT_INAC", "CH07"
+      ],
+      "targets": ["INGRESO", "INGRESO_NLB", "INGRESO_JUB", "INGRESO_SBS"]
+    },
+    {
+      "stage_id": "stage_3_job_characteristics",
+      "inputs": [
+        "IX_TOT", "P02", "P03", "AGLO_rk", "Reg_rk", "V01", "H05",
+        "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H16",
+        "H15", "PROP", "H14", "H13", "P07", "P08", "P09", "P10",
+        "P05", "CONDACT", "CAT_OCUP", "CAT_INAC", "CH07", "INGRESO",
+        "INGRESO_NLB", "INGRESO_JUB", "INGRESO_SBS"
+      ],
+      "targets": ["PP07G1", "PP07G_59", "PP07I", "PP07J", "PP07K"]
+    },
+    {
+      "stage_id": "stage_4_income_components",
+      "inputs": [
+        "IX_TOT", "P02", "P03", "AGLO_rk", "Reg_rk", "V01", "H05",
+        "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H16",
+        "H15", "PROP", "H14", "H13", "P07", "P08", "P09", "P10",
+        "P05", "CONDACT", "CAT_OCUP", "CAT_INAC", "CH07", "INGRESO",
+        "INGRESO_NLB", "INGRESO_JUB", "INGRESO_SBS", "PP07G1",
+        "PP07G_59", "PP07I", "PP07J", "PP07K"
+      ],
+      "targets": [
+        "P21", "P47T", "PP08D1", "TOT_P12", "T_VI", "V12_M", "V2_M",
+        "V3_M", "V5_M"
+      ]
+    }
+  ]
+}
