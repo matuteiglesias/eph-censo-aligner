@@ -1,0 +1,179 @@
+{
+  "schema": "research.transport-legacy-bridge-evidence/v1",
+  "spec_id": "historical_staged_v1",
+  "status": "code_evidence_only_not_semantic_approval",
+  "evidence": {
+    "forward_crosswalk": "aligner/eph_align.py:CROSSWALK_EPH_TO_CENSO",
+    "reverse_crosswalk": "aligner/censo_align.py:CROSSWALK_CENSO_TO_EPH",
+    "forward_recodes": "aligner/eph_align.py:RECODE_HOGAR,RECODE_INDIV",
+    "reverse_recodes": "aligner/censo_align.py:RECODE_CENSO_TO_EPH,CLIP_CENSO"
+  },
+  "notes": [
+    "This registry records what the historical implementation attempted; it does not establish question-level conceptual equivalence.",
+    "Every record still requires exact EPH and CPV-2010 question, universe, reference-period and category evidence before external Census use can be approved.",
+    "Asymmetric or lossy recodes are recorded as ambiguity rather than silently treated as invertible mappings."
+  ],
+  "features": [
+    {
+      "feature": "IX_TOT",
+      "eph_source_fields": ["IX_TOT"],
+      "census_source_fields": ["IX_TOT"],
+      "legacy_bridge": "same historical variable name",
+      "known_loss_or_ambiguity": "EPH-side historical path clips values to [0,8]."
+    },
+    {
+      "feature": "P02",
+      "eph_source_fields": ["CH04"],
+      "census_source_fields": ["P02"],
+      "legacy_bridge": "CH04 -> P02 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "P03",
+      "eph_source_fields": ["CH06"],
+      "census_source_fields": ["P03"],
+      "legacy_bridge": "CH06 -> P03 rename",
+      "known_loss_or_ambiguity": "Historical EPH path clips negative ages to zero and couples age <14 to CONDACT=0."
+    },
+    {
+      "feature": "CONDACT",
+      "eph_source_fields": ["ESTADO"],
+      "census_source_fields": ["CONDACT"],
+      "legacy_bridge": "ESTADO -> CONDACT legacy rename before shared naming",
+      "known_loss_or_ambiguity": "Historical path forces CONDACT=0 for people under 14."
+    },
+    {
+      "feature": "V01",
+      "eph_source_fields": ["IV1"],
+      "census_source_fields": ["V01"],
+      "legacy_bridge": "IV1 -> V01 rename",
+      "known_loss_or_ambiguity": "Reverse Census->EPH path applies a non-identity V01 category recode; invertibility is not established."
+    },
+    {
+      "feature": "H05",
+      "eph_source_fields": ["IV3"],
+      "census_source_fields": ["H05"],
+      "legacy_bridge": "IV3 -> H05 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "H06",
+      "eph_source_fields": ["IV4"],
+      "census_source_fields": ["H06"],
+      "legacy_bridge": "IV4 -> H06 rename",
+      "known_loss_or_ambiguity": "Reverse Census->EPH path recodes category 8 to 9; category equivalence is not established."
+    },
+    {
+      "feature": "H07",
+      "eph_source_fields": ["IV5"],
+      "census_source_fields": ["H07"],
+      "legacy_bridge": "IV5 -> H07 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "H08",
+      "eph_source_fields": ["IV6"],
+      "census_source_fields": ["H08"],
+      "legacy_bridge": "IV6 -> H08 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "H09",
+      "eph_source_fields": ["IV7"],
+      "census_source_fields": ["H09"],
+      "legacy_bridge": "IV7 -> H09 rename",
+      "known_loss_or_ambiguity": "Reverse Census->EPH path collapses Census categories 5 and 6 into 4."
+    },
+    {
+      "feature": "H10",
+      "eph_source_fields": ["IV8"],
+      "census_source_fields": ["H10"],
+      "legacy_bridge": "IV8 -> H10 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "H11",
+      "eph_source_fields": ["IV10"],
+      "census_source_fields": ["H11"],
+      "legacy_bridge": "IV10 recode then IV10 -> H11 rename",
+      "known_loss_or_ambiguity": "EPH categories 2 and 3 are historically collapsed to 2."
+    },
+    {
+      "feature": "H12",
+      "eph_source_fields": ["IV11"],
+      "census_source_fields": ["H12"],
+      "legacy_bridge": "IV11 -> H12 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "H16",
+      "eph_source_fields": ["II1"],
+      "census_source_fields": ["H16"],
+      "legacy_bridge": "II1 -> H16 rename",
+      "known_loss_or_ambiguity": "Reverse Census->EPH path clips H16 to [0,9]."
+    },
+    {
+      "feature": "H15",
+      "eph_source_fields": ["II2"],
+      "census_source_fields": ["H15"],
+      "legacy_bridge": "II2 -> H15 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "PROP",
+      "eph_source_fields": ["II7"],
+      "census_source_fields": ["PROP"],
+      "legacy_bridge": "II7 recode then II7 -> PROP rename",
+      "known_loss_or_ambiguity": "EPH II7 categories 7, 8 and 9 are historically collapsed to PROP=6."
+    },
+    {
+      "feature": "H14",
+      "eph_source_fields": ["II8"],
+      "census_source_fields": ["H14"],
+      "legacy_bridge": "II8 -> H14 rename",
+      "known_loss_or_ambiguity": "Reverse Census->EPH path is a many-to-one category recode."
+    },
+    {
+      "feature": "H13",
+      "eph_source_fields": ["II9"],
+      "census_source_fields": ["H13"],
+      "legacy_bridge": "II9 recode then II9 -> H13 rename",
+      "known_loss_or_ambiguity": "Forward and reverse paths use non-identity category recodes."
+    },
+    {
+      "feature": "P07",
+      "eph_source_fields": ["CH09"],
+      "census_source_fields": ["P07"],
+      "legacy_bridge": "CH09 recode then CH09 -> P07 rename",
+      "known_loss_or_ambiguity": "Historical path maps CH09 values 0 and 3 to 2; reverse path is also recoded."
+    },
+    {
+      "feature": "P08",
+      "eph_source_fields": ["CH10"],
+      "census_source_fields": ["P08"],
+      "legacy_bridge": "CH10 -> P08 rename",
+      "known_loss_or_ambiguity": null
+    },
+    {
+      "feature": "P09",
+      "eph_source_fields": ["CH12"],
+      "census_source_fields": ["P09"],
+      "legacy_bridge": "CH12 -> P09 rename",
+      "known_loss_or_ambiguity": "Historical EPH path replaces CH12=99 with 0 and jointly alters CH13."
+    },
+    {
+      "feature": "P10",
+      "eph_source_fields": ["CH13"],
+      "census_source_fields": ["P10"],
+      "legacy_bridge": "CH13 -> P10 rename",
+      "known_loss_or_ambiguity": "Historical path sets CH13=0 when CH12 is 0, 1 or 9."
+    },
+    {
+      "feature": "P05",
+      "eph_source_fields": ["CH15"],
+      "census_source_fields": ["P05"],
+      "legacy_bridge": "CH15 recode then CH15 -> P05 rename",
+      "known_loss_or_ambiguity": "Historical EPH path collapses CH15 categories before rename."
+    }
+  ]
+}
