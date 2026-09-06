@@ -4,7 +4,7 @@ OUT ?= out/fixture-release
 help:
 	@printf '%s\n' 'install check test smoke release-fixture clean'
 install:
-	$(PYTHON) -m pip install --no-build-isolation -e '.[test]'
+	$(PYTHON) -m pip install -e '.[test]'
 check:
 	$(PYTHON) -m compileall -q aligner
 	$(PYTHON) -m json.tool aligner/mappings/registry.json >/dev/null
