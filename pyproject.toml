@@ -11,5 +11,9 @@ test = ["pytest>=7,<9"]
 [project.scripts]
 crosswalk-release = "aligner.cli:main"
 crosswalk-validate = "aligner.integration:main"
+[tool.setuptools.packages.find]
+include = ["aligner*"]
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.yaml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
