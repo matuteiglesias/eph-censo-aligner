@@ -1,4 +1,4 @@
-PYTHON ?= python
+PYTHON ?= python3
 OUT ?= out/fixture-release
 .PHONY: help install check test smoke release-fixture clean
 help:
