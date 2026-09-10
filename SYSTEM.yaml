@@ -7,35 +7,47 @@ repository:
 domain: research
 system: research.eph-census
 role: semantic-alignment-component
-lifecycle: maintenance
+lifecycle: active-bounded
 authority:
-  status: proposed
+  status: current-boundary-real-vintage-review-pending
   owns:
   - versioned EPH-to-Census and Census-to-EPH semantic mappings
   - validation, loss/ambiguity reporting and alignment outputs
   - vocabulary for declaring model-facing deployment observability
+  - real-vintage semantic review records binding exact upstream source/release identities
   does_not_own:
   - raw EPH or Census acquisition
   - Argentine geography authority or geographic crosswalks
+  - Census household sampling or sample identity
   - income model ownership or model selection
-  - Census sample inference execution
   - statistical transport claims between EPH and Census
+  - target-period welfare inference
 interfaces:
   consumes:
-  - artifact:research.eph-source@1
-  - artifact:research.census-source@1
+  - artifact:publicdata.eph-microdata@1
+    producer: repo.microdatos-eph-indec
+    role: source-faithful EPH quarter tables and provenance
+  - artifact:research.census-frame@1
+    producer: repo.sampler-censo-arg
+    role: source-faithful Census donor-frame schema/payload for semantic review
+  - artifact:research.census-target-year-sample@2
+    producer: repo.sampler-censo-arg
+    role: exact sampled Census payload/identity when building a scoring feature plane
   - artifact:research.census-geography@1 (optional identity input)
   produces:
   # Historical artifact identifier retained for compatibility. Semantically this
   # is a variable/alignment release, not a geographic crosswalk.
   - artifact:research.eph-census-crosswalk@1
+  - artifact:research.eph-census-semantic-feature-plane@1
   manifest_schema: research-artifact-manifest/v1
   compatibility: aligner/compatibility.json
 upstream:
 - repo.microdatos-eph-indec
-downstream:
-- repo.income-modeling-eph
 - repo.sampler-censo-arg
+- repo.argentina-censo2022-rxdb
+
+downstream:
+- repo.encuestador-de-hogares
 canonical_commands:
 - make check
 - make test
@@ -43,15 +55,27 @@ canonical_commands:
 - make release-fixture
 generated_paths:
 - out/
+scientific_invariants:
+- semantic alignment never implies statistical transport validity
+- real-vintage approval must bind exact EPH and Census release identities
+- shared_observable and derived_shared are the only classes eligible as external Census model inputs
+- stage_target may be supervised on the EPH side but is not required as a Census observable
+- historical code/name similarity is evidence for review only, never sufficient approval
+- sampler selection_probability and design weights are not semantic model features
+- target-period temporal admissibility is decided by the transport consumer after semantic alignment
 verification:
-  status: fixture-implemented-runtime-pending
-  last_verified: '2026-08-04'
+  status: fixture-implemented-real-vintage-review-pending
+  last_verified: '2026-09-10'
   command: make check && make test && make smoke && make release-fixture
   supported_vintages:
   - fixture-v1
+  evidence:
+  - package/install/fixture runtime is green after CI packaging repairs
+  - current real producer contracts are explicit in this boundary
   unknowns:
-  - all real EPH and Census source vintages require evidence and methodological approval
+  - all real EPH and Census source vintages require source-backed semantic review
   - no deployment feature category is approved for real Census inference yet
+  - first real handoff must inspect exact EPH and Census schemas before approving the minimal shared feature plane
 maintenance:
-  cadence: annual
-  next_review: '2027-08-01'
+  cadence: active-development
+  next_review: '2026-11-01'
