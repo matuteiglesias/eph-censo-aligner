@@ -1,0 +1,55 @@
+{
+  "evidence_contract": "research.eph-real-vintage-schema-evidence/v1",
+  "status": "source_evidence_only_not_semantic_approval",
+  "captured_on": "2026-09-10",
+  "producer": {
+    "repository": "matuteiglesias/microdatos-EPH-INDEC",
+    "artifact_contract": "publicdata.eph-microdata@1",
+    "software_version": "1.0.0"
+  },
+  "release": {
+    "release_id": "eph-2024-q3-3b6a7a15c4af",
+    "period": "2024-Q3",
+    "extraction_contract_version": "eph-zip-v2",
+    "source_archive_sha256": "fbeacb866777759e2fcbc64e9643734bae29ec6db480dd6d532dc505505b3204",
+    "source_manifest_sha256": "0104a46dc53dfb537a730e6fa323ee5ab0240cc838b66d32459cb2e2c3002f5d",
+    "warnings": []
+  },
+  "tables": {
+    "household": {
+      "path": "household/usu_hogar_t324.txt",
+      "rows": 16650,
+      "columns": 98,
+      "schema_hash": "8efc49bf5706bc6b6990802e88e5d8b9664a8f5b983d52ff6137d95ebf3192c4",
+      "sha256": "4fc25e8d9e283be1d9c41bc93d237e6c6ad666dbc80bb33559cbe185d17f2fb5",
+      "identity_fields_present": ["CODUSU", "NRO_HOGAR"],
+      "candidate_fields_present": [
+        "IV1", "IV3", "IV4", "IV5", "IV6", "IV7", "IV8", "IV10", "IV11",
+        "II1", "II2", "II7", "II8", "II9", "IX_TOT"
+      ]
+    },
+    "individual": {
+      "path": "individual/usu_individual_t324.txt",
+      "rows": 47564,
+      "columns": 235,
+      "schema_hash": "7ac540dfa24e6f94e2cc63490986bf1036ca24b67bd03655077b724755d341ca",
+      "sha256": "b435a2f22c72c5d0e281279f27ade8da674c6db6fe6597b620dc0485d9b27260",
+      "identity_fields_present": ["CODUSU", "NRO_HOGAR", "COMPONENTE"],
+      "candidate_fields_present": [
+        "CH04", "CH06", "CH07", "CH09", "CH10", "CH12", "CH13", "CH15",
+        "ESTADO", "CAT_OCUP", "CAT_INAC", "P21", "P47T"
+      ]
+    }
+  },
+  "relational_observation": {
+    "household_join_key": ["CODUSU", "NRO_HOGAR"],
+    "person_identity_extension": ["COMPONENTE"],
+    "neutral_join_is_structurally_available": true
+  },
+  "review_notes": [
+    "Modern EPH 2024-Q3 exposes ESTADO rather than a source CONDACT field on the individual table.",
+    "Housing variables are source-faithful household observations and must be joined by CODUSU + NRO_HOGAR when needed at person level.",
+    "PONDERA/design fields exist upstream but this evidence record does not approve them for model fitting or evaluation.",
+    "This record freezes source/schema evidence only. It does not approve any EPH-to-Census semantic equivalence, real-vintage mapping, temporal admissibility, or transport model input."
+  ]
+}
