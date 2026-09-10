@@ -2,6 +2,11 @@ name: Scheduled semantic maturity gate
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/scheduled-semantic-maturity.yml
+      - Makefile
+      - pyproject.toml
   schedule:
     - cron: "17 11 * * 2"
 
@@ -35,6 +40,7 @@ jobs:
           make smoke
 
       - name: Require at least one approved real-vintage mapping for mature transport
+        if: github.event_name != 'pull_request'
         run: |
           python - <<'PY'
           import json
