@@ -1,0 +1,17 @@
+{
+  "schema":"research.eph-census-code-values/v1",
+  "status":"source-bound-review-pending",
+  "labels":"normalized semantic tokens; official wording remains in referenced source pages",
+  "concepts":{
+    "P02":{"eph":{"field":"CH04","codes":{"1":"male","2":"female"}},"census":{"field":"P02","codes":{"1":"male","2":"female"}}},
+    "P03":{"eph":{"field":"CH06","type":"age_completed_years"},"census":{"field":"P03","type":"age_completed_years"}},
+    "CONDACT":{"eph":{"field":"ESTADO","codes":{"0":"individual_nonresponse","1":"employed","2":"unemployed","3":"inactive","4":"under_10"}},"census":{"field":"CONDACT","universe":"age_14_plus","codes":{"1":"employed","2":"unemployed","3":"inactive"}}},
+    "P07":{"eph":{"field":"CH09","codes":{"1":"yes","2":"no","3":"under_2"}},"census":{"field":"P07","universe":"age_3_plus","codes":{"1":"yes","2":"no"}}},
+    "P08":{"eph":{"field":"CH10","codes":{"1":"attends","2":"attended","3":"never"}},"census":{"field":"P08","universe":"age_3_plus","codes":{"1":"attends","2":"attended","3":"never"}}},
+    "P09":{"eph":{"field":"CH12","codes":{"1":"initial","2":"primary","3":"egb","4":"secondary","5":"polimodal","6":"tertiary","7":"university","8":"postgraduate","9":"special_education"}},"census":{"field":"P09","codes":{"1":"initial","2":"primary","3":"egb","4":"secondary","5":"polimodal","6":"higher_nonuniversity","7":"university","8":"postuniversity","9":"special_education"}}},
+    "P10":{"eph":{"field":"CH13","codes":{"1":"yes","2":"no","9":"unknown"}},"census":{"field":"P10","codes":{"1":"yes","2":"no","3":"unknown"}}},
+    "P05":{"eph":{"field":"CH15","codes":{"1":"same_locality","2":"other_locality_same_province","3":"other_province","4":"border_country","5":"other_country","9":"unknown"}},"census":{"field":"P05","codes":{"1":"argentina","2":"other_country"}}}
+  },
+  "sources":{"eph":"EPH_disenoreg_09.pdf pp.13-15","census":"CPV2010 base.pdf pp.10-12; basic questionnaire p.3"},
+  "raw_field_alias_guard":{"P07":"REDATAM may expose P1707","P08":"REDATAM may expose P1808","P09":"REDATAM may expose P1909","P10":"REDATAM may expose P2010"}
+}
