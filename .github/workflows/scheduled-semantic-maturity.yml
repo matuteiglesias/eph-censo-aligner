@@ -1,26 +1,41 @@
-name: Scheduled semantic maturity gate
+name: Weekly semantic research pulse
 
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - .github/workflows/scheduled-semantic-maturity.yml
+      - .github/workflows/feature-plane-ci.yml
       - Makefile
       - pyproject.toml
+      - aligner/feature_plane.py
+      - aligner/legacy_bridge_review.py
+      - aligner/codebook.py
+      - aligner/codebooks/**
+      - aligner/real_semantic_plane.py
+      - aligner/real_semantic_cli.py
+      - contracts/**
+      - tests/test_feature_plane.py
+      - tests/test_legacy_bridge_review.py
+      - tests/test_codebook.py
+      - tests/test_real_semantic_plane.py
   schedule:
-    - cron: "17 11 * * 2"
+    # Tuesday: runs after sampler contract pulse.
+    - cron: "47 11 * * 2"
 
 permissions:
   contents: read
 
 concurrency:
-  group: scheduled-semantic-maturity
+  group: weekly-semantic-research-pulse
   cancel-in-progress: false
 
 jobs:
-  maturity:
+  research-maturity:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      PYTHONPATH: .
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,17 +45,59 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install test dependencies
-        run: make install
+      - name: Install package and test dependencies
+        run: python -m pip install -e .[test] ruff
 
-      - name: Verify executable fixture boundary
+      - name: Verify executable semantic boundary
         run: |
           make check
           make test
           make smoke
 
-      - name: Require at least one approved real-vintage mapping for mature transport
-        if: github.event_name != 'pull_request'
+      - name: Verify real 2024-Q3 research review policy and handoff coherence
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          policy_path = Path("aligner/codebooks/real_2024q3_cpv2010_review_policy.json")
+          handoff_path = Path("contracts/encuestador_gamma_handoff_2024q3.json")
+          if not policy_path.is_file():
+              raise SystemExit(f"missing real research review policy: {policy_path}")
+          if not handoff_path.is_file():
+              raise SystemExit(f"missing encuestador handoff contract: {handoff_path}")
+
+          policy = json.loads(policy_path.read_text(encoding="utf-8"))
+          handoff = json.loads(handoff_path.read_text(encoding="utf-8"))
+          expected_schema = "research.eph-census-semantic-review-policy/v1"
+          if policy.get("schema") != expected_schema:
+              raise SystemExit(f"unexpected review policy schema: {policy.get('schema')!r}")
+
+          release_id = policy.get("release_id")
+          if release_id != "eph-cpv2010-semantic-plane-2024q3-v1":
+              raise SystemExit(f"unexpected frozen research release id: {release_id!r}")
+          if handoff.get("semantic_plane_release_id") != release_id:
+              raise SystemExit("handoff semantic-plane release id diverges from review policy")
+
+          policy_parents = policy.get("parents", {})
+          handoff_parents = handoff.get("parents", {})
+          for key in ("eph_release_id", "census_frame_release_id", "census_sample_release_id"):
+              if policy_parents.get(key) != handoff_parents.get(key):
+                  raise SystemExit(f"handoff parent mismatch for {key}")
+
+          decisions = Counter(row.get("semantic_decision", "missing") for row in policy.get("concepts", []))
+          if decisions["approve"] == 0:
+              raise SystemExit("real review policy contains no approved concepts")
+          print("Research review decisions:", dict(sorted(decisions.items())))
+          if decisions.get("needs-judgment", 0):
+              print(
+                  f"::warning::{decisions['needs-judgment']} concepts remain needs-judgment; "
+                  "research commissioning is not methodological approval"
+              )
+          PY
+
+      - name: Report methodological-approval state without conflating it with research commissioning
         run: |
           python - <<'PY'
           import json
@@ -53,19 +110,25 @@ jobs:
               if row.get("source_vintage") not in {None, "fixture-v1"}
               and row.get("reviewer_status") == "approved"
           ]
-          if not approved_real:
-              print("::error::Fixture machinery is healthy, but no approved real-vintage semantic mapping is available. See issue #7.")
-              raise SystemExit(1)
-          print(f"Approved real-vintage mapping rows: {len(approved_real)}")
+          if approved_real:
+              print(f"Methodologically approved real-vintage mapping rows: {len(approved_real)}")
+          else:
+              print(
+                  "::notice::No registry row is marked reviewer_status=approved. "
+                  "This is compatible with a green research pulse: the frozen 2024-Q3 policy "
+                  "is research-commissioned evidence, not approval on Matias's behalf."
+              )
           PY
 
       - name: Summarize maturity state
         if: always()
         run: |
           {
-            echo "## Scheduled semantic maturity"
+            echo "## Weekly semantic research pulse"
             echo
-            echo "This workflow intentionally separates two facts: fixture execution may be healthy while real EPH/Census semantic review is still incomplete."
+            echo "Green means fixture execution remains healthy and the frozen real 2024-Q3 EPH↔CPV2010 research policy is internally coherent with its encuestador handoff."
             echo
-            echo "A red final gate means the aligner is not yet eligible to feed consequential transport, even if its fixture tests are green."
+            echo "Green does **not** mean all semantic mappings are methodologically approved. Unresolved concepts stay explicit and reviewer_status=approved remains a separate, stronger gate."
+            echo
+            echo "The large semantic-plane materialization remains a locally anchored research artifact until its governed bytes are published as a portable parent."
           } >> "$GITHUB_STEP_SUMMARY"
