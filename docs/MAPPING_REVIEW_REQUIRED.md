@@ -2,16 +2,37 @@
 
 **Approval state: pending.** Nothing below is approved on Matías's behalf. Registry entries retain `reviewer_status: pending`.
 
+## Active real-review evidence
+
+The current exact review pair is no longer synthetic-only:
+
+- EPH release: `eph-2024-q3-3b6a7a15c4af`;
+- CPV-2010 frame: `arg-cpv2010-frame-ee6ada167c2d6429`;
+- Census sample: `census-sample-2024-0839713eafea8d1b` (`research.census-target-year-sample/v2`, full payload).
+
+Machine-native official source semantics for the 23 current candidate concepts are bound in:
+
+- `aligner/codebooks/real_2024q3_cpv2010_23.json`;
+- `aligner/codebooks/README.md`;
+- `aligner/review_evidence/eph-2024-q3-3b6a7a15c4af.json`;
+- `aligner/review_evidence/census-sample-2024-0839713eafea8d1b.json`.
+
+The codebook layer distinguishes raw producer field identity from REDATAM presentation/derived aliases. For example, the real CPV source payload uses raw `P07`, `P08`, `P09`, `P10`, while some REDATAM dictionary views expose names such as `P1707`, `P1808`, `P1909`, `P2010`. Do not rewrite raw producer identities from presentation aliases.
+
+Official source documents are pointers/evidence, not copied manuals. The active EPH register-design PDF and the CPV-2010 database-definitions PDF provide field definitions/codes; the Census basic questionnaire supplies instrument wording, universe and skip logic. A mapping still requires exact-release support and reviewer judgment.
+
 ## Decisions required
 
-1. **All renamed cross-survey concepts:** confirm question wording, universe, reference period, and whether a mapping is permissible; code resemblance is not equivalence.
+1. **All renamed cross-survey concepts:** compare official source definitions, questionnaire universe/reference period, exact-release support and category domains; code resemblance is not equivalence.
 2. **Category collapses:** `IV10→H11`, `II9→H13`, `II7→PROP`, `CH15→P05`, `CH09→P07`, and reverse recodes for `V01`, `H06`, `H09`, `H14`, `H13`, and `P07`. Decide whether each many-to-one loss is acceptable.
-3. **Split families:** approve one-of argmax for `V5`, `V11`, `V21`, `V22` and list-valued collapse for `V2`; specify behavior for ties, no active value, and conflicting values.
-4. **Conditional changes:** approve activity overwrite for age below 14 and `CH13=0` based on `CH12`; establish source universes.
-5. **Sample membership:** approve removal of household records having `IV1=9`.
-6. **Clipping/missingness:** approve `IX_TOT` clipping, `H16` clipping, negative-age clipping, and conversion of every unsupported recode category to null.
-7. **Geography:** provide authority for the `DPTO` lookup and agglomeration 33/93 overrides; resolve duplicate/conflicting lookup behavior.
-8. **Vintages:** validate the EPH eras in `notas.md`, identify a Census vintage, and approve any expansion beyond synthetic `fixture-v1`.
+3. **Known semantic mismatches:** explicitly adjudicate at least `ESTADO↔CONDACT` age/reference-universe differences, `IV7↔H09` wording differences, `IV10↔H11` ternary-vs-binary structure, `II9↔H13` applicability/no-bathroom structure, `II1↔H16` room-count definitions, and `II7↔PROP` tenure category systems.
+4. **Education/literacy:** compare `CH09/CH10/CH12/CH13` with raw Census `P07/P08/P09/P10`, including age universes and missing/ignored codes. Do not confuse raw fields with REDATAM aliases.
+5. **IX_TOT:** decide whether the Census-side concept is derived from exact complete sample membership, checked against `TOTPERS`, rather than treated as a raw Census field.
+6. **Conditional changes:** approve or reject activity overwrite for age below 14 and `CH13=0` based on `CH12`; establish source universes before any transformation is promoted.
+7. **Sample membership:** review historical removal of household records having `IV1=9`; it is not inherited automatically by the new exact-release plane.
+8. **Clipping/missingness:** review historical `IX_TOT` clipping, `H16` clipping, negative-age clipping, and unsupported-category-to-null behavior against the current source codebooks and observed supports.
+9. **Geography:** geography-derived external predictors remain outside the first 23-concept plane; `AGLO_rk` and `Reg_rk` are forbidden external predictors. Do not invent a substitute during this review.
+10. **Temporal admissibility:** semantic approval does not imply that a 2010 donor observation is appropriate as a 2024 welfare-period predictor. `encuestador-de-hogares` owns that later decision.
 
 ## Directionality and precedence gate
 
