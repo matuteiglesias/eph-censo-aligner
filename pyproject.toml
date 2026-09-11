@@ -5,12 +5,13 @@ build-backend = "setuptools.build_meta"
 name = "eph-censo-aligner"
 version = "1.0.0"
 requires-python = ">=3.10"
-dependencies = ["pandas>=2.0,<3", "numpy>=1.24,<3"]
+dependencies = ["pandas>=2.0,<3", "numpy>=1.24,<3", "pyarrow>=14"]
 [project.optional-dependencies]
 test = ["pytest>=7,<9"]
 [project.scripts]
 crosswalk-release = "aligner.cli:main"
 crosswalk-validate = "aligner.integration:main"
+semantic-plane = "aligner.real_semantic_cli:main"
 [tool.setuptools.packages.find]
 include = ["aligner*"]
 [tool.setuptools.package-data]
