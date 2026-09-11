@@ -1,0 +1,23 @@
+{
+  "schema":"research.eph-census-code-values/v1",
+  "status":"source-bound-review-pending",
+  "labels":"normalized semantic tokens; official wording remains in referenced source pages",
+  "concepts":{
+    "IX_TOT":{"eph":{"field":"IX_TOT","type":"member_count"},"census":{"field":"membership_count","cross_check":"TOTPERS","type":"member_count"}},
+    "V01":{"eph":{"field":"IV1","codes":{"1":"house","2":"apartment","3":"tenement_room","4":"hotel_pension_room","5":"nonresidential_local","6":"other"}},"census":{"field":"V01","codes":{"1":"house","2":"rancho","3":"casilla","4":"apartment","5":"tenement_room","6":"hotel_pension_room","7":"nonresidential_local","8":"mobile_dwelling","9":"street_person"}}},
+    "H05":{"eph":{"field":"IV3","codes":{"1":"finished_hard","2":"cement_fixed_brick","3":"earth_loose_brick","4":"other"}},"census":{"field":"H05","codes":{"1":"finished_hard","2":"cement_fixed_brick","3":"earth_loose_brick","4":"other"}}},
+    "H06":{"eph":{"field":"IV4","codes":{"1":"membrane_asphalt","2":"slab","3":"slate_tile","4":"metal_sheet","5":"fiber_plastic_sheet","6":"cardboard_sheet","7":"cane_board_straw","9":"unknown_horizontal_property"}},"census":{"field":"H06","codes":{"1":"membrane_asphalt","2":"slab","3":"slate_tile","4":"metal_sheet","5":"fiber_plastic_sheet","6":"cardboard_sheet","7":"cane_board_straw","8":"other"}}},
+    "H07":{"eph":{"field":"IV5","codes":{"1":"yes","2":"no"}},"census":{"field":"H07","codes":{"1":"yes","2":"no"}}},
+    "H08":{"eph":{"field":"IV6","codes":{"1":"inside_dwelling","2":"inside_lot","3":"outside_lot"}},"census":{"field":"H08","codes":{"1":"inside_dwelling","2":"inside_lot","3":"outside_lot"}}},
+    "H09":{"eph":{"field":"IV7","codes":{"1":"public_network","2":"motor_bore","3":"manual_bore","4":"other"}},"census":{"field":"H09","codes":{"1":"public_network","2":"motor_bore","3":"manual_bore","4":"well","5":"tanker","6":"surface_or_rain"}}},
+    "H10":{"eph":{"field":"IV8","codes":{"1":"yes","2":"no"}},"census":{"field":"H10","codes":{"1":"yes","2":"no"}}},
+    "H11":{"eph":{"field":"IV10","codes":{"1":"automatic_water_flush","2":"bucket_water_flush","3":"no_water_latrine"}},"census":{"field":"H11","codes":{"1":"has_flush_system","2":"no_flush_system"}}},
+    "H12":{"eph":{"field":"IV11","codes":{"1":"public_sewer","2":"septic_plus_cesspit","3":"cesspit_only","4":"ground_pit"}},"census":{"field":"H12","codes":{"1":"public_sewer","2":"septic_plus_cesspit","3":"cesspit_only","4":"ground_pit"}}},
+    "H13":{"eph":{"field":"II9","codes":{"1":"exclusive","2":"shared_same_dwelling","3":"shared_other_dwelling","4":"no_bathroom"}},"census":{"field":"H13","codes":{"1":"exclusive","2":"shared"}}},
+    "H14":{"eph":{"field":"II8","codes":{"1":"network_gas","2":"bottled_or_tube_gas","3":"kerosene_wood_coal","4":"other"}},"census":{"field":"H14","codes":{"1":"network_gas","2":"bulk_gas","3":"tube_gas","4":"bottled_gas","5":"electricity","6":"wood_coal","7":"other"}}},
+    "H15":{"eph":{"field":"II2","type":"sleeping_room_count"},"census":{"field":"H15","type":"sleeping_room_count"}},
+    "H16":{"eph":{"field":"II1","type":"exclusive_use_room_count"},"census":{"field":"H16","type":"total_room_count_excluding_bath_kitchen"}},
+    "PROP":{"eph":{"field":"II7","codes":{"1":"owner_dwelling_land","2":"owner_dwelling_only","3":"tenant","4":"occupant_pays_taxes","5":"employment_tied","6":"free_with_permission","7":"de_facto_without_permission","8":"succession","9":"other"}},"census":{"field":"PROP","codes":{"1":"owner_dwelling_land","2":"owner_dwelling_only","3":"tenant","4":"borrowed","5":"employment_tied","6":"other"}}}
+  },
+  "sources":{"eph":"EPH_disenoreg_09.pdf pp.5-9","census":"CPV2010 base.pdf pp.2,5-8; basic questionnaire pp.1-2"}
+}
