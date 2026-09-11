@@ -1,0 +1,69 @@
+{
+  "evidence_contract": "research.census-real-vintage-schema-evidence/v1",
+  "status": "source_evidence_only_not_semantic_approval",
+  "captured_on": "2026-09-11",
+  "producer": {
+    "repository": "matuteiglesias/samplerCensoARG",
+    "sample_contract": "research.census-target-year-sample/v2",
+    "frame_contract": "research.census-frame/v1"
+  },
+  "frame": {
+    "release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
+    "vintage": 2010,
+    "full_source_payload": true,
+    "counts": {
+      "dwellings": 13838097,
+      "households": 12197647,
+      "persons": 40117096,
+      "official_departments": 527
+    },
+    "producer_relational_validation": "pass"
+  },
+  "sample": {
+    "release_id": "census-sample-2024-0839713eafea8d1b",
+    "target_year": 2024,
+    "materialization": "full-payload",
+    "counts": {
+      "dwellings": 141621,
+      "households": 141863,
+      "persons": 469172,
+      "selected_departments": 525
+    },
+    "complete_checker": "pass",
+    "independent_identity_fk_membership_checks": "pass",
+    "complete_household_membership": true,
+    "analysis_weight": null,
+    "generic_sample_weight": null,
+    "design_inverse_probability_weight_role": "audit_design_only"
+  },
+  "sampling_universe": {
+    "matched_departments": 526,
+    "target_only_departments": 0,
+    "governed_donor_only_exclusions": [
+      {
+        "department_id": "94021",
+        "donor_person_mass": 17,
+        "reason": "donor-only department; absent from target-population support",
+        "reassigned_person_mass": 0,
+        "source_rows_deleted": false,
+        "source_frame_mutated": false
+      }
+    ],
+    "zero_realized_selection_departments": ["94028"]
+  },
+  "candidate_payload_fields": {
+    "persona.parquet": ["P02", "P03", "P05", "P07", "P08", "P09", "P10", "CONDACT"],
+    "hogar.parquet": ["H05", "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H13", "H14", "H15", "H16", "PROP", "TOTPERS"],
+    "vivienda.parquet": ["V01"],
+    "derived": {
+      "IX_TOT": "derive from complete person_membership.parquet or declared household/person relation; not a raw Census field in this sample"
+    }
+  },
+  "forbidden_external_predictors": ["AGLO_rk", "Reg_rk"],
+  "review_notes": [
+    "This evidence establishes exact Census custody, schema availability and relational integrity only.",
+    "Field-name presence does not establish EPH/Census semantic equivalence.",
+    "Selection probabilities and inverse-probability values remain sampler design/audit metadata and are not model features or analysis weights.",
+    "The next gate is source-backed review of the 23 candidate concepts against exact EPH release eph-2024-q3-3b6a7a15c4af."
+  ]
+}
