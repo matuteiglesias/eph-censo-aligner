@@ -1,0 +1,67 @@
+{
+  "schema": "research.encuestador-semantic-plane-handoff/v1",
+  "status": "awaiting_local_materialization",
+  "semantic_plane_release_id": "eph-cpv2010-semantic-plane-2024q3-v1",
+  "parents": {
+    "eph_release_id": "eph-2024-q3-3b6a7a15c4af",
+    "census_frame_release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
+    "census_sample_release_id": "census-sample-2024-0839713eafea8d1b"
+  },
+  "required_local_artifacts": {
+    "manifest": "feature_plane_manifest.json",
+    "eph_features": "eph_p1.parquet",
+    "census_features": "census_p1.parquet",
+    "support": "support_report.json",
+    "review": "semantic_review_matrix.json"
+  },
+  "canonical_identity": {
+    "person": "row_id",
+    "household": "household_id",
+    "outer_grouping": "household_id",
+    "fuzzy_or_positional_join": false
+  },
+  "training_target": {
+    "source_release_id": "eph-2024-q3-3b6a7a15c4af",
+    "field": "P47T",
+    "unit": "person",
+    "join_contract": "recompute canonical row_id from CODUSU:NRO_HOGAR:COMPONENTE and require one-to-one identity"
+  },
+  "frozen_science": {
+    "terminal": "hurdle_gamma",
+    "weighting": "none",
+    "outer_folds": "one deterministic household FoldManifest reused byte-for-byte across all arms",
+    "positive_amount_fit": "strictly positive eligible P47T only",
+    "census_scoring": "forbidden until EPH comparison is adjudicated"
+  },
+  "feature_planes": {
+    "P1-S": ["P02", "P05"],
+    "P1-R": ["IX_TOT", "P02", "P03", "P05", "P07", "P08", "P09", "P10", "CONDACT", "V01", "H05", "H07", "H08", "H09", "H10", "H12", "H13", "H14", "H15", "PROP"]
+  },
+  "matched_experiment_matrix": [
+    {"run_id": "P0-S", "architecture": "direct", "feature_plane": "P1-S"},
+    {"run_id": "P1-S", "architecture": "lean", "feature_plane": "P1-S"},
+    {"run_id": "P0-R", "architecture": "direct", "feature_plane": "P1-R"},
+    {"run_id": "P1-R", "architecture": "lean", "feature_plane": "P1-R"}
+  ],
+  "required_comparisons": [
+    {"left": "P0-S", "right": "P1-S", "question": "latent architecture value under target-year-defensible information"},
+    {"left": "P0-R", "right": "P1-R", "question": "latent architecture value under broader research information"},
+    {"left": "P0-S", "right": "P0-R", "question": "effect of broadening external information on the direct baseline"},
+    {"left": "P1-S", "right": "P1-R", "question": "effect of broadening external information on the lean architecture; not a pure architecture comparison"}
+  ],
+  "required_diagnostics": [
+    "person point risk",
+    "household point risk",
+    "positive-amount diagnostics",
+    "oracle-presence diagnostic",
+    "low-tail CDF bias",
+    "household rank and quintile/decile transitions",
+    "complete-vs-incomplete household selection",
+    "person and household fold stability"
+  ],
+  "next_cli_contract": {
+    "adapter_name": "semantic_plane_parquet_v1",
+    "inputs": ["feature_plane_manifest.json", "eph_p1.parquet", "exact EPH release root"],
+    "required_behavior": "select P1-S/P1-R columns from manifest, join P47T by exact canonical row_id, generate one household FoldManifest, reuse it for all four runs, freeze hurdle-Gamma estimator semantics, and package comparisons"
+  }
+}
