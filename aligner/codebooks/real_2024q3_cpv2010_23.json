@@ -1,0 +1,63 @@
+{
+  "schema": "research.eph-census-codebook-pair/v1",
+  "status": "official_source_bound_semantic_review_pending",
+  "pair": {
+    "eph_release_id": "eph-2024-q3-3b6a7a15c4af",
+    "census_frame_release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
+    "census_sample_release_id": "census-sample-2024-0839713eafea8d1b"
+  },
+  "sources": {
+    "eph_register_design": {
+      "publisher": "INDEC",
+      "url": "https://www.indec.gob.ar/ftp/cuadros/menusuperior/eph/EPH_disenoreg_09.pdf",
+      "role": "official EPH field definitions and codes"
+    },
+    "census_database_definitions": {
+      "publisher": "INDEC",
+      "url": "https://redatam.indec.gob.ar/redarg/censos/cpv2010rad/Docs/base.pdf",
+      "role": "official CPV-2010 raw database field definitions and codes"
+    },
+    "census_basic_questionnaire": {
+      "publisher": "INDEC",
+      "url": "https://www.indec.gob.ar/ftp/cuadros/poblacion/cuestionario_basico_2010.pdf",
+      "role": "official questionnaire wording, universes and skip logic"
+    },
+    "census_redatam_dictionary": {
+      "publisher": "INDEC REDATAM",
+      "url": "https://redatam.indec.gob.ar/argbin/RpWebStats.exe/Dictionary?BASE=CPV2010A&ITEM=DICALL&lang=ESP",
+      "role": "presentation/derived variable dictionary; aliases must not replace raw producer field identity"
+    }
+  },
+  "concepts": [
+    {"concept":"IX_TOT","entity":"household","eph":{"field":"IX_TOT","table":"household","label":"household member count","source_page":9},"census":{"field":"TOTPERS/person_membership","table":"hogar+person_membership","label":"household person count","source_page":null,"derivation":"derive exact member count from complete membership; compare to TOTPERS"},"review_status":"pending"},
+    {"concept":"P02","entity":"person","eph":{"field":"CH04","table":"individual","label":"sex","source_page":13},"census":{"field":"P02","table":"persona","label":"sex","source_page":10,"questionnaire_item":2},"review_status":"pending"},
+    {"concept":"P03","entity":"person","eph":{"field":"CH06","table":"individual","label":"age in completed years","source_page":13},"census":{"field":"P03","table":"persona","label":"age in completed years","source_page":10,"questionnaire_item":3},"review_status":"pending"},
+    {"concept":"CONDACT","entity":"person","eph":{"field":"ESTADO","table":"individual","label":"activity status","source_page":15,"universe":"EPH coding includes minors under 10 and individual nonresponse"},"census":{"field":"CONDACT","table":"persona","label":"activity status","source_page":12,"universe":"population age 14+"},"review_status":"pending","known_semantic_risk":"different age universe/reference instrument; temporal role also unresolved"},
+    {"concept":"V01","entity":"dwelling","eph":{"field":"IV1","table":"household","label":"dwelling type by observation","source_page":5},"census":{"field":"V01","table":"vivienda","label":"private dwelling type","source_page":2,"questionnaire_item":1},"review_status":"pending"},
+    {"concept":"H05","entity":"household","eph":{"field":"IV3","table":"household","label":"predominant interior floor material","source_page":5},"census":{"field":"H05","table":"hogar","label":"predominant floor material","source_page":5,"questionnaire_item":5},"review_status":"pending"},
+    {"concept":"H06","entity":"household","eph":{"field":"IV4","table":"household","label":"exterior roof covering","source_page":5},"census":{"field":"H06","table":"hogar","label":"predominant exterior roof covering","source_page":6,"questionnaire_item":6},"review_status":"pending"},
+    {"concept":"H07","entity":"household","eph":{"field":"IV5","table":"household","label":"interior roof lining/ceiling","source_page":5},"census":{"field":"H07","table":"hogar","label":"interior roof lining/ceiling","source_page":6,"questionnaire_item":7},"review_status":"pending"},
+    {"concept":"H08","entity":"household","eph":{"field":"IV6","table":"household","label":"water access location","source_page":6},"census":{"field":"H08","table":"hogar","label":"water access location","source_page":6,"questionnaire_item":8},"review_status":"pending"},
+    {"concept":"H09","entity":"household","eph":{"field":"IV7","table":"household","label":"water source","source_page":6},"census":{"field":"H09","table":"hogar","label":"water source for drinking/cooking","source_page":6,"questionnaire_item":9},"review_status":"pending","known_semantic_risk":"EPH wording is household water source; Census explicitly drinking/cooking source"},
+    {"concept":"H10","entity":"household","eph":{"field":"IV8","table":"household","label":"has bathroom/latrine","source_page":6},"census":{"field":"H10","table":"hogar","label":"has bathroom/latrine","source_page":7,"questionnaire_item":10},"review_status":"pending"},
+    {"concept":"H11","entity":"household","eph":{"field":"IV10","table":"household","label":"toilet flush mechanism/type","source_page":6},"census":{"field":"H11","table":"hogar","label":"flush button/chain/cistern available","source_page":7,"questionnaire_item":11},"review_status":"pending","known_semantic_risk":"EPH has three response states while Census is binary"},
+    {"concept":"H12","entity":"household","eph":{"field":"IV11","table":"household","label":"toilet drainage","source_page":6},"census":{"field":"H12","table":"hogar","label":"toilet drainage","source_page":7,"questionnaire_item":12},"review_status":"pending"},
+    {"concept":"H13","entity":"household","eph":{"field":"II9","table":"household","label":"bathroom tenure/use","source_page":7},"census":{"field":"H13","table":"hogar","label":"bathroom/latrine exclusive use","source_page":7,"questionnaire_item":13},"review_status":"pending","known_semantic_risk":"EPH distinguishes no bathroom and sharing across household/vivienda; Census field is exclusive-vs-shared among applicable households"},
+    {"concept":"H14","entity":"household","eph":{"field":"II8","table":"household","label":"cooking fuel","source_page":7},"census":{"field":"H14","table":"hogar","label":"main cooking fuel","source_page":7,"questionnaire_item":14},"review_status":"pending"},
+    {"concept":"H15","entity":"household","eph":{"field":"II2","table":"household","label":"rooms habitually used for sleeping","source_page":6},"census":{"field":"H15","table":"hogar","label":"rooms/pieces for sleeping","source_page":8,"questionnaire_item":15},"review_status":"pending"},
+    {"concept":"H16","entity":"household","eph":{"field":"II1","table":"household","label":"rooms for exclusive household use","source_page":6},"census":{"field":"H16","table":"hogar","label":"total rooms/pieces excluding bathrooms and kitchens","source_page":8,"questionnaire_item":16},"review_status":"pending","known_semantic_risk":"EPH asks rooms for exclusive household use; Census counts total household rooms with explicit exclusions"},
+    {"concept":"PROP","entity":"household","eph":{"field":"II7","table":"household","label":"tenure regime","source_page":7},"census":{"field":"PROP","table":"hogar","label":"dwelling tenure and land ownership","source_page":8,"questionnaire_items":[17,18]},"review_status":"pending","known_semantic_risk":"category systems differ and Census combines dwelling tenure with land ownership"},
+    {"concept":"P07","entity":"person","eph":{"field":"CH09","table":"individual","label":"literacy","source_page":14},"census":{"field":"P07","table":"persona","label":"literacy","source_page":10,"questionnaire_item":7,"raw_field_note":"raw CPV field; REDATAM views may expose P1707 alias"},"review_status":"pending"},
+    {"concept":"P08","entity":"person","eph":{"field":"CH10","table":"individual","label":"school attendance history","source_page":14},"census":{"field":"P08","table":"persona","label":"school attendance history","source_page":10,"questionnaire_item":8,"raw_field_note":"raw CPV field; REDATAM views may expose P1808 alias"},"review_status":"pending"},
+    {"concept":"P09","entity":"person","eph":{"field":"CH12","table":"individual","label":"highest/current education level","source_page":14},"census":{"field":"P09","table":"persona","label":"education level attended/current","source_page":10,"questionnaire_item":9,"raw_field_note":"raw CPV field; REDATAM views may expose P1909 alias"},"review_status":"pending"},
+    {"concept":"P10","entity":"person","eph":{"field":"CH13","table":"individual","label":"completed declared education level","source_page":14},"census":{"field":"P10","table":"persona","label":"completed declared education level","source_page":12,"questionnaire_item":10,"raw_field_note":"raw CPV field; REDATAM views may expose P2010 alias"},"review_status":"pending"},
+    {"concept":"P05","entity":"person","eph":{"field":"CH15","table":"individual","label":"place/country of birth class","source_page":14},"census":{"field":"P05","table":"persona","label":"born in Argentina or another country","source_page":10,"questionnaire_item":5},"review_status":"pending","known_semantic_risk":"EPH source has finer domestic/foreign categories before historical collapse"}
+  ],
+  "guardrails": {
+    "field_name_equality_implies_equivalence": false,
+    "redatam_alias_replaces_raw_field_identity": false,
+    "semantic_approval_from_codebook_only": false,
+    "requires_observed_release_support": true,
+    "requires_human_reviewer_status": true
+  }
+}
