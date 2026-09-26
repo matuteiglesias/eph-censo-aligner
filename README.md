@@ -2,7 +2,7 @@
 
 Alineador semántico bidireccional para expresar variables seleccionadas de la Encuesta Permanente de Hogares (EPH) y del Censo bajo contratos comunes y reglas de recodificación explícitas.
 
-> **Estado:** release de alineación v1 probado únicamente con el vintage sintético `fixture-v1`. Ningún vintage real de EPH o Censo está soportado hasta completar revisión metodológica.
+> **Estado:** el contrato sintético v1 sigue disponible; además existe una revisión real acotada y source-backed para EPH 2024-Q3 ↔ CPV-2010. El compilador real es policy-driven y donor-vintage-neutral: CPV-2010 y CPV-2022 son instancias revisadas del mismo contrato, no pipelines separados. Una política CPV-2022 real todavía requiere su propia revisión semántica.
 
 ## Qué problema resuelve
 
@@ -26,6 +26,7 @@ aligner/
   utils.py           transformaciones reutilizables
   validate.py        controles de integridad
   mappings/          columnas, valores y excepciones
+  codebooks/         evidencia y políticas de revisión real versionadas
 
 docs/DEPLOYMENT_FEATURE_PLANE.md
                      vocabulario para auditar qué variables podrían formar
@@ -58,7 +59,28 @@ Las reglas de ida y vuelta son independientes: el sistema nunca invierte automá
 
 ## Vintages y revisión
 
-El registro máquina-legible es `aligner/mappings/registry.json`. Sólo `fixture-v1` está soportado en ambas direcciones. Todos los vintages reales siguen desconocidos/no soportados; colapsos, condicionales, cambios de muestra y overrides geográficos pendientes requieren revisión humana. Ver `docs/MAPPING_REVIEW_REQUIRED.md`.
+El registro histórico/bidireccional sigue en `aligner/mappings/registry.json`. Para datos reales, la unidad de autoridad es una **review policy exacta** que fija por separado:
+
+- release EPH y período EPH;
+- frame/sample Census exactos;
+- `census_vintage` (2010 o 2022);
+- período objetivo del muestreo;
+- evidencia de codebook;
+- decisión semántica y rol temporal de cada concepto.
+
+La política real actualmente materializada es EPH 2024-Q3 ↔ CPV-2010. El compilador no contiene una rama científica especial para 2010: una futura política CPV-2022 usa el mismo código y contrato, pero debe aportar su propia evidencia y adjudicación.
+
+Ejemplo:
+
+```bash
+semantic-plane materialize-real \
+  --policy aligner/codebooks/real_2024q3_cpv2010_review_policy.json \
+  --eph-release-root /path/to/eph-release \
+  --census-sample-root /path/to/census-sample \
+  --output-dir /path/to/semantic-plane
+```
+
+Ver `docs/MAPPING_REVIEW_REQUIRED.md`.
 
 ## Integración por artefacto
 
@@ -80,4 +102,4 @@ No posee la definición oficial de las variables fuente, los microdatos, geograf
 
 ## Próximo trabajo sustantivo
 
-Antes de habilitar vintages reales, la siguiente tarea es auditar una superficie mínima de variables usando las categorías documentadas en `docs/DEPLOYMENT_FEATURE_PLANE.md`. Ese documento sólo define vocabulario y gates: **no aprueba ninguna variable ni vintage real**.
+El siguiente handoff real es revisar CPV-2022 contra el período EPH objetivo usando el mismo compilador y los mismos conceptos canónicos cuando la equivalencia esté justificada. La alineación semántica no decide transporte estadístico: soporte, domain shift y admisibilidad temporal final pertenecen a `encuestador-de-hogares`.
