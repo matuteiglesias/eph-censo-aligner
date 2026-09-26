@@ -77,7 +77,10 @@
         "field": "CH06",
         "map": {},
         "special_to_null": [],
-        "universe": "all person records"
+        "universe": "all person records",
+        "special_map": {
+          "-1": 0
+        }
       },
       "census": {
         "field": "P03",
@@ -148,6 +151,7 @@
           "2": 2
         },
         "special_to_null": [
+          0,
           3
         ],
         "universe": "age 2+ after removing EPH under-2 special state"
@@ -158,7 +162,9 @@
           "1": 1,
           "2": 2
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "age 3+"
       },
       "information_loss": {
@@ -181,13 +187,17 @@
       "eph": {
         "field": "CH10",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "education-question universe"
       },
       "census": {
         "field": "P08",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "age 3+"
       },
       "information_loss": {
@@ -211,13 +221,18 @@
       "eph": {
         "field": "CH12",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0,
+          99
+        ],
         "universe": "persons who attend or attended education"
       },
       "census": {
         "field": "P09",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "persons who attend or attended education"
       },
       "information_loss": {
@@ -262,6 +277,7 @@
           "2": 2
         },
         "special_to_null": [
+          0,
           3
         ],
         "universe": "persons with a declared education level"
@@ -303,7 +319,9 @@
           "2": 2,
           "3": 3
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "age 14+"
       },
       "information_loss": {
@@ -343,7 +361,9 @@
           "8": 6,
           "9": 6
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "Census dwelling records"
       },
       "information_loss": {
@@ -376,7 +396,9 @@
       "census": {
         "field": "H05",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -431,7 +453,9 @@
       "census": {
         "field": "H07",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -460,7 +484,9 @@
       "census": {
         "field": "H08",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -497,7 +523,9 @@
           "5": 4,
           "6": 4
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -528,7 +556,9 @@
       "census": {
         "field": "H10",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -575,13 +605,17 @@
       "eph": {
         "field": "IV11",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "households with bathroom/latrine"
       },
       "census": {
         "field": "H12",
         "map": {},
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "households with bathroom/latrine"
       },
       "information_loss": {
@@ -621,7 +655,9 @@
           "1": 1,
           "2": 2
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "households with bathroom/latrine"
       },
       "information_loss": {
@@ -663,7 +699,9 @@
           "6": 3,
           "7": 4
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -763,7 +801,9 @@
           "5": 4,
           "6": 5
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "information_loss": {
@@ -794,5 +834,16 @@
     "codebook_pair": "real_2024q3_cpv2010_23.json",
     "person_codes": "real_2024q3_cpv2010_person_codes.json",
     "household_codes": "real_2024q3_cpv2010_household_codes.json"
+  },
+  "normalization_notes": {
+    "source_specials_2024q3_cpv2010": {
+      "status": "reviewed-bounded",
+      "rationale": [
+        "Zero values outside documented Census substantive code domains are treated as out-of-universe/not-applicable sentinels, not canonical categories.",
+        "EPH CH06=-1 is normalized to age 0, preserving the established source-era infant-age handling.",
+        "EPH zero/99 values outside documented education/bathroom substantive domains are treated as null; CH09=3 remains an explicit under-2 special and is null on the common literacy plane.",
+        "Valid canonical Census categories absent from one EPH quarter are statistical support diagnostics and do not fail semantic materialization."
+      ]
+    }
   }
 }
