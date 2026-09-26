@@ -641,7 +641,7 @@ def _canonical_frame(
     return pd.DataFrame(data, columns=["row_id", "household_id", *fields])
 
 
-def _support_payload(result: dict[str, Any]) -> dict[str, Any]:
+def _semantic_compatibility_payload(result: dict[str, Any]) -> dict[str, Any]:
     _, p1r, _, _ = plane_fields(result["policy"])
     approved = set(p1r)
     violations = [
@@ -651,7 +651,7 @@ def _support_payload(result: dict[str, Any]) -> dict[str, Any]:
         if support["concept"] in approved
     ]
     return {
-        "schema": "research.eph-census-feature-plane-support/v1",
+        "schema": "research.eph-census-semantic-compatibility/v1",
         "release_id": result["policy"]["release_id"],
         "parents": result["policy"]["parents"],
         "clocks": result["policy"]["clocks"],
@@ -676,7 +676,7 @@ def write_real_review(
     output_dir = Path(output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     review_path = output_dir / "semantic_review_matrix.json"
-    support_path = output_dir / "support_report.json"
+    compatibility_path = output_dir / "semantic_compatibility_report.json"
     _json(review_path, {
         "schema": "research.eph-census-semantic-review-matrix/v1",
         "release_id": result["policy"]["release_id"],
@@ -684,14 +684,14 @@ def write_real_review(
         "clocks": result["policy"]["clocks"],
         "rows": result["review_rows"],
     })
-    support = _support_payload(result)
-    _json(support_path, support)
+    compatibility = _semantic_compatibility_payload(result)
+    _json(compatibility_path, compatibility)
     return {
         "release_id": result["policy"]["release_id"],
         "review_matrix": str(review_path),
-        "support_report": str(support_path),
-        "support_status": support["status"],
-        "violations": support["violations"],
+        "semantic_compatibility_report": str(compatibility_path),
+        "semantic_compatibility_status": compatibility["status"],
+        "violations": compatibility["violations"],
     }
 
 
@@ -711,7 +711,7 @@ def materialize_real_plane(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     review_path = output_dir / "semantic_review_matrix.json"
-    support_path = output_dir / "support_report.json"
+    compatibility_path = output_dir / "semantic_compatibility_report.json"
     manifest_path = output_dir / "feature_plane_manifest.json"
     eph_path = output_dir / "eph_p1.parquet"
     census_path = output_dir / "census_p1.parquet"
@@ -723,27 +723,27 @@ def materialize_real_plane(
         "clocks": policy["clocks"],
         "rows": result["review_rows"],
     })
-    support = _support_payload(result)
-    _json(support_path, support)
-    if support["violations"]:
+    compatibility = _semantic_compatibility_payload(result)
+    _json(compatibility_path, compatibility)
+    if compatibility["violations"]:
         raise RealSemanticPlaneError(
-            "support_gate_failed:"
+            "semantic_compatibility_gate_failed:"
             + ",".join(
                 f"{violation['type']}:{violation['concept']}"
-                for violation in support["violations"][:20]
+                for violation in compatibility["violations"][:20]
             )
         )
 
     eph_plane = _canonical_frame(result["eph_frame"], result["transformed_eph"], p1r)
     census_plane = _canonical_frame(result["census_frame"], result["transformed_census"], p1r)
     if tuple(eph_plane.columns) != tuple(census_plane.columns):
-        support["status"] = "fail"
-        support["violations"].append({
+        compatibility["status"] = "fail"
+        compatibility["violations"].append({
             "type": "schema_disagreement",
             "eph_columns": list(eph_plane.columns),
             "census_columns": list(census_plane.columns),
         })
-        _json(support_path, support)
+        _json(compatibility_path, compatibility)
         raise RealSemanticPlaneError("canonical_plane_schema_disagreement")
 
     try:
@@ -755,7 +755,7 @@ def materialize_real_plane(
     manifest = {
         "schema": "research.eph-census-semantic-feature-plane/v1",
         "release_id": policy["release_id"],
-        "status": "candidate_for_encuestador_eph_adjudication",
+        "status": "semantic_review_materialized_transport_not_authorized",
         "parents": policy["parents"],
         "clocks": policy["clocks"],
         "contracts": policy["contracts"],
@@ -790,10 +790,10 @@ def materialize_real_plane(
             "sha256": _sha256(review_path),
             "row_count": len(policy["concepts"]),
         },
-        "support_report": {
-            "path": support_path.name,
-            "sha256": _sha256(support_path),
-            "status": "pass",
+        "semantic_compatibility_report": {
+            "path": compatibility_path.name,
+            "sha256": _sha256(compatibility_path),
+            "status": compatibility["status"],
         },
         "consumer_handoff": {
             "identity_columns": ["row_id", "household_id"],
