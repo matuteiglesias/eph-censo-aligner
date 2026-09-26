@@ -1,13 +1,12 @@
-"""Executable real-data semantic review and canonical feature-plane materialization.
+"""Policy-driven real-data semantic review and canonical feature-plane materialization.
 
-Pinned real pair:
-- EPH: eph-2024-q3-3b6a7a15c4af
-- Census: census-sample-2024-0839713eafea8d1b
+Each reviewed policy pins its exact EPH release, Census donor frame/sample,
+donor vintage, sampling target year and codebook evidence. Reusable compiler
+logic is donor-vintage neutral: CPV-2010 and CPV-2022 are policy instances, not
+separate pipelines.
 
-Semantic approval and temporal admissibility remain separate. The module emits
-one person-level canonical schema on both sides, but only approved concepts are
-compiled into the plane. P1-S is the stable/shared subset; P1-R is the broader
-approved research plane.
+Semantic approval and temporal admissibility remain separate. P1-S is the
+stable/shared subset; P1-R is the broader approved research plane.
 """
 from __future__ import annotations
 
@@ -20,17 +19,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .codebook import load_real_codebook_pair
+from .codebook import load_codebook_pair
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "aligner" / "codebooks" / "real_2024q3_cpv2010_review_policy.json"
-PERSON_CODES_PATH = ROOT / "aligner" / "codebooks" / "real_2024q3_cpv2010_person_codes.json"
-HOUSEHOLD_CODES_PATH = ROOT / "aligner" / "codebooks" / "real_2024q3_cpv2010_household_codes.json"
-
-EPH_RELEASE_ID = "eph-2024-q3-3b6a7a15c4af"
-CENSUS_SAMPLE_ID = "census-sample-2024-0839713eafea8d1b"
-CENSUS_FRAME_ID = "arg-cpv2010-frame-ee6ada167c2d6429"
-CENSUS_CONTRACT = "research.census-target-year-sample/v2"
+CODEBOOK_DIR = ROOT / "aligner" / "codebooks"
 
 DECISIONS = {"approve", "needs-judgment", "reject"}
 TEMPORAL_ROLES = {"stable/shared", "target-period-state", "research-only", "unresolved"}
@@ -65,21 +58,56 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def load_review_policy() -> dict[str, Any]:
-    value = _load_json(POLICY_PATH)
+def _evidence_paths(policy: dict[str, Any], policy_path: Path) -> dict[str, Path]:
+    evidence = policy.get("evidence")
+    if not isinstance(evidence, dict):
+        raise RealSemanticPlaneError("review_policy_evidence_missing")
+    out: dict[str, Path] = {}
+    for key in ("codebook_pair", "person_codes", "household_codes"):
+        value = evidence.get(key)
+        if not isinstance(value, str) or not value:
+            raise RealSemanticPlaneError(f"review_policy_evidence_missing:{key}")
+        candidate = Path(value)
+        if not candidate.is_absolute():
+            candidate = policy_path.parent / candidate
+        out[key] = candidate.resolve()
+    return out
+
+
+def load_review_policy(path: Path = POLICY_PATH) -> dict[str, Any]:
+    path = Path(path).expanduser().resolve()
+    value = _load_json(path)
     if value.get("schema") != "research.eph-census-semantic-review-policy/v1":
         raise RealSemanticPlaneError("unexpected_review_policy_schema")
-    parents = value.get("parents") or {}
-    expected = {
-        "eph_release_id": EPH_RELEASE_ID,
-        "census_frame_release_id": CENSUS_FRAME_ID,
-        "census_sample_release_id": CENSUS_SAMPLE_ID,
-    }
-    if parents != expected:
-        raise RealSemanticPlaneError("review_policy_parent_identity_mismatch")
+
+    parents = value.get("parents")
+    if not isinstance(parents, dict):
+        raise RealSemanticPlaneError("review_policy_parents_missing")
+    for key in ("eph_release_id", "census_frame_release_id", "census_sample_release_id"):
+        if not isinstance(parents.get(key), str) or not parents[key]:
+            raise RealSemanticPlaneError(f"review_policy_parent_identity_missing:{key}")
+
+    clocks = value.get("clocks")
+    if not isinstance(clocks, dict):
+        raise RealSemanticPlaneError("review_policy_clocks_missing")
+    if not isinstance(clocks.get("eph_period"), str) or not clocks["eph_period"]:
+        raise RealSemanticPlaneError("review_policy_eph_period_missing")
+    if clocks.get("census_vintage") not in {2010, 2022}:
+        raise RealSemanticPlaneError("review_policy_census_vintage_invalid")
+    try:
+        target_year = int(clocks.get("sampling_target_year"))
+    except (TypeError, ValueError) as exc:
+        raise RealSemanticPlaneError("review_policy_sampling_target_year_invalid") from exc
+    if target_year < 2000:
+        raise RealSemanticPlaneError("review_policy_sampling_target_year_invalid")
+
+    contracts = value.get("contracts")
+    if not isinstance(contracts, dict) or not contracts.get("census_sample"):
+        raise RealSemanticPlaneError("review_policy_census_contract_missing")
+
     concepts = value.get("concepts")
-    if not isinstance(concepts, list) or len(concepts) != 23:
-        raise RealSemanticPlaneError("review_policy_requires_exact_23_concepts")
+    if not isinstance(concepts, list) or not concepts:
+        raise RealSemanticPlaneError("review_policy_concepts_missing")
     seen: set[str] = set()
     for row in concepts:
         concept = str(row.get("concept", ""))
@@ -94,9 +122,11 @@ def load_review_policy() -> dict[str, Any]:
             spec = row.get(side)
             if not isinstance(spec, dict) or not spec.get("field"):
                 raise RealSemanticPlaneError(f"review_policy_side_missing:{concept}:{side}")
-    codebook_names = {row["concept"] for row in load_real_codebook_pair()["concepts"]}
-    if seen != codebook_names:
-        raise RealSemanticPlaneError("review_policy_codebook_surface_mismatch")
+
+    paths = _evidence_paths(value, path)
+    codebook = load_codebook_pair(paths["codebook_pair"], expected_concepts=seen)
+    if codebook.get("pair") != parents:
+        raise RealSemanticPlaneError("review_policy_codebook_parent_identity_mismatch")
     return value
 
 
@@ -115,12 +145,15 @@ def _read_delimited(path: Path, *, delimiter: str, encoding: str) -> pd.DataFram
         raise RealSemanticPlaneError(f"source_table_read_failed:{path}") from exc
 
 
-def _verify_eph_release(root: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+def _verify_eph_release(
+    root: Path, policy: dict[str, Any]
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     root = Path(root).expanduser().resolve()
     manifest = _load_json(root / "output-manifest.json")
-    if manifest.get("release_id") != EPH_RELEASE_ID:
+    expected_release = policy["parents"]["eph_release_id"]
+    if manifest.get("release_id") != expected_release:
         raise RealSemanticPlaneError(
-            f"unexpected_eph_release:{manifest.get('release_id')}!={EPH_RELEASE_ID}"
+            f"unexpected_eph_release:{manifest.get('release_id')}!={expected_release}"
         )
     files = manifest.get("files")
     if not isinstance(files, list):
@@ -150,24 +183,29 @@ def _verify_eph_release(root: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict[st
 
 
 def _verify_census_release(
-    root: Path,
+    root: Path, policy: dict[str, Any]
 ) -> tuple[dict[str, pd.DataFrame], dict[str, Any], dict[str, Any]]:
     root = Path(root).expanduser().resolve()
     manifest = _load_json(root / "manifest.json")
     qa = _load_json(root / "qa.json")
-    if manifest.get("contract") != CENSUS_CONTRACT:
+    expected_contract = policy["contracts"]["census_sample"]
+    if manifest.get("contract") != expected_contract:
         raise RealSemanticPlaneError("unexpected_census_contract")
-    if manifest.get("release_id") != CENSUS_SAMPLE_ID:
+    expected_sample = policy["parents"]["census_sample_release_id"]
+    if manifest.get("release_id") != expected_sample:
         raise RealSemanticPlaneError(
-            f"unexpected_census_release:{manifest.get('release_id')}!={CENSUS_SAMPLE_ID}"
+            f"unexpected_census_release:{manifest.get('release_id')}!={expected_sample}"
         )
     frame = manifest.get("frame") or {}
-    if frame.get("frame_release_id") != CENSUS_FRAME_ID:
+    expected_frame = policy["parents"]["census_frame_release_id"]
+    if frame.get("frame_release_id") != expected_frame:
         raise RealSemanticPlaneError("unexpected_census_frame_parent")
-    if str(frame.get("census_vintage")) != "2010":
+    expected_vintage = int(policy["clocks"]["census_vintage"])
+    if int(frame.get("census_vintage", -1)) != expected_vintage:
         raise RealSemanticPlaneError("unexpected_census_vintage")
     parent = manifest.get("target_population_parent") or {}
-    if int(parent.get("target_year", -1)) != 2024:
+    expected_target_year = int(policy["clocks"]["sampling_target_year"])
+    if int(parent.get("target_year", -1)) != expected_target_year:
         raise RealSemanticPlaneError("unexpected_census_target_year")
     if manifest.get("materialization") != "full-payload":
         raise RealSemanticPlaneError("census_full_payload_required")
