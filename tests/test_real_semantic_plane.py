@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from aligner.real_semantic_plane import (
     _review_row,
@@ -140,7 +141,5 @@ def test_eph_period_clock_is_executable_not_decorative() -> None:
     _verify_eph_frame_period(frame, policy, role="fixture")
 
     bad = pd.DataFrame({"ANO4": [2024], "TRIMESTRE": [2]})
-    import pytest
-
     with pytest.raises(Exception, match="eph_period_mismatch"):
         _verify_eph_frame_period(bad, policy, role="fixture")
