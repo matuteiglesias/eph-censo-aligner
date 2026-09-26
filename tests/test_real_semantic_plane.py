@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pandas as pd
 
 from aligner.real_semantic_plane import (
@@ -25,6 +27,12 @@ def test_real_review_policy_is_exact_23_and_separates_temporal_planes() -> None:
         "census_frame_release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
         "census_sample_release_id": "census-sample-2024-0839713eafea8d1b",
     }
+    assert policy["clocks"] == {
+        "eph_period": "2024-Q3",
+        "census_vintage": 2010,
+        "sampling_target_year": 2024,
+    }
+    assert policy["contracts"]["census_sample"] == "research.census-target-year-sample/v2"
     p1s, p1r, unresolved, rejected = plane_fields(policy)
     assert p1s == ["P02", "P05"]
     assert len(p1r) == 20
@@ -70,3 +78,55 @@ def test_condact_is_semantically_approved_but_not_target_year_stable() -> None:
     assert record["temporal_role"] == "target-period-state"
     assert set(record["eph"]["special_to_null"]) == {0, 4}
     assert record["census"]["universe"] == "age 14+"
+
+
+def test_policy_loader_is_donor_vintage_neutral(tmp_path) -> None:
+    source_policy = load_review_policy()
+    policy_path = tmp_path / "review_policy_2022.json"
+    codebook_path = tmp_path / "codebook_2022.json"
+    person_codes_path = tmp_path / "person_codes.json"
+    household_codes_path = tmp_path / "household_codes.json"
+
+    policy = json.loads(json.dumps(source_policy))
+    policy["release_id"] = "eph-cpv2022-semantic-plane-2024q3-fixture"
+    policy["parents"] = {
+        "eph_release_id": "eph-fixture-2024-q3",
+        "census_frame_release_id": "arg-cpv2022-frame-fixture",
+        "census_sample_release_id": "census-sample-2024-cpv2022-fixture",
+    }
+    policy["clocks"] = {
+        "eph_period": "2024-Q3",
+        "census_vintage": 2022,
+        "sampling_target_year": 2024,
+    }
+    policy["evidence"] = {
+        "codebook_pair": codebook_path.name,
+        "person_codes": person_codes_path.name,
+        "household_codes": household_codes_path.name,
+    }
+
+    original_codebook_path = (
+        __import__("pathlib").Path(__file__).parents[1]
+        / "aligner"
+        / "codebooks"
+        / "real_2024q3_cpv2010_23.json"
+    )
+    codebook = json.loads(original_codebook_path.read_text(encoding="utf-8"))
+    codebook["pair"] = dict(policy["parents"])
+    codebook_path.write_text(json.dumps(codebook), encoding="utf-8")
+
+    base = __import__("pathlib").Path(__file__).parents[1] / "aligner" / "codebooks"
+    person_codes_path.write_text(
+        (base / "real_2024q3_cpv2010_person_codes.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    household_codes_path.write_text(
+        (base / "real_2024q3_cpv2010_household_codes.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    policy_path.write_text(json.dumps(policy), encoding="utf-8")
+
+    loaded = load_review_policy(policy_path)
+    assert loaded["parents"]["census_frame_release_id"] == "arg-cpv2022-frame-fixture"
+    assert loaded["clocks"]["census_vintage"] == 2022
+    assert loaded["clocks"]["sampling_target_year"] == 2024
