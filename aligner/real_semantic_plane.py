@@ -23,8 +23,6 @@ from .codebook import load_codebook_pair
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "aligner" / "codebooks" / "real_2024q3_cpv2010_review_policy.json"
-CODEBOOK_DIR = ROOT / "aligner" / "codebooks"
-
 DECISIONS = {"approve", "needs-judgment", "reject"}
 TEMPORAL_ROLES = {"stable/shared", "target-period-state", "research-only", "unresolved"}
 
@@ -618,6 +616,8 @@ def _support_payload(result: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema": "research.eph-census-feature-plane-support/v1",
         "release_id": result["policy"]["release_id"],
+        "parents": result["policy"]["parents"],
+        "clocks": result["policy"]["clocks"],
         "status": "fail" if violations else "pass",
         "eph_rows": len(result["eph_frame"]),
         "census_rows": len(result["census_frame"]),
@@ -644,6 +644,7 @@ def write_real_review(
         "schema": "research.eph-census-semantic-review-matrix/v1",
         "release_id": result["policy"]["release_id"],
         "parents": result["policy"]["parents"],
+        "clocks": result["policy"]["clocks"],
         "rows": result["review_rows"],
     })
     support = _support_payload(result)
@@ -682,6 +683,7 @@ def materialize_real_plane(
         "schema": "research.eph-census-semantic-review-matrix/v1",
         "release_id": policy["release_id"],
         "parents": policy["parents"],
+        "clocks": policy["clocks"],
         "rows": result["review_rows"],
     })
     support = _support_payload(result)
