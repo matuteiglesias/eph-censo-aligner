@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pandas as pd
 
@@ -106,7 +107,7 @@ def test_policy_loader_is_donor_vintage_neutral(tmp_path) -> None:
     }
 
     original_codebook_path = (
-        __import__("pathlib").Path(__file__).parents[1]
+        Path(__file__).parents[1]
         / "aligner"
         / "codebooks"
         / "real_2024q3_cpv2010_23.json"
@@ -115,7 +116,7 @@ def test_policy_loader_is_donor_vintage_neutral(tmp_path) -> None:
     codebook["pair"] = dict(policy["parents"])
     codebook_path.write_text(json.dumps(codebook), encoding="utf-8")
 
-    base = __import__("pathlib").Path(__file__).parents[1] / "aligner" / "codebooks"
+    base = Path(__file__).parents[1] / "aligner" / "codebooks"
     person_codes_path.write_text(
         (base / "real_2024q3_cpv2010_person_codes.json").read_text(encoding="utf-8"),
         encoding="utf-8",
