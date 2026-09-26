@@ -795,14 +795,19 @@ def materialize_real_plane(
             "sha256": _sha256(support_path),
             "status": "pass",
         },
-        "encuestador_contract": {
+        "consumer_handoff": {
             "identity_columns": ["row_id", "household_id"],
-            "weighting": "none",
-            "terminal_formulation": "hurdle_gamma",
-            "required_outer_grouping": "household_id",
             "planes": {"P1-S": p1s, "P1-R": p1r},
-            "census_scoring_authorized": False,
-            "reason": "Run and adjudicate EPH P0 vs P1-S vs P1-R first.",
+            "temporal_roles": {
+                row["concept"]: row["temporal_role"] for row in policy["concepts"]
+            },
+            "semantic_alignment_only": True,
+            "statistical_transport_authorized": False,
+            "reason": (
+                "Semantic comparability and temporal-role evidence are upstream "
+                "inputs; model family, weighting, support qualification and "
+                "transport promotion belong to the transport consumer."
+            ),
         },
     }
     _json(manifest_path, manifest)
