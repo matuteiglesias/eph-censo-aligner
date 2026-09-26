@@ -8,6 +8,7 @@ import pandas as pd
 from aligner.real_semantic_plane import (
     _review_row,
     _transform_series,
+    _verify_eph_frame_period,
     load_review_policy,
     plane_fields,
 )
@@ -131,3 +132,15 @@ def test_policy_loader_is_donor_vintage_neutral(tmp_path) -> None:
     assert loaded["parents"]["census_frame_release_id"] == "arg-cpv2022-frame-fixture"
     assert loaded["clocks"]["census_vintage"] == 2022
     assert loaded["clocks"]["sampling_target_year"] == 2024
+
+
+def test_eph_period_clock_is_executable_not_decorative() -> None:
+    policy = load_review_policy()
+    frame = pd.DataFrame({"ANO4": [2024, 2024], "TRIMESTRE": [3, 3]})
+    _verify_eph_frame_period(frame, policy, role="fixture")
+
+    bad = pd.DataFrame({"ANO4": [2024], "TRIMESTRE": [2]})
+    import pytest
+
+    with pytest.raises(Exception, match="eph_period_mismatch"):
+        _verify_eph_frame_period(bad, policy, role="fixture")
