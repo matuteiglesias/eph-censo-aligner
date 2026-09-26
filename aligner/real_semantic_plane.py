@@ -450,6 +450,9 @@ def _transform_series(
 ) -> tuple[pd.Series, dict[str, Any]]:
     raw_support = _observed_support(series)
     mapping = {str(key): value for key, value in (spec.get("map") or {}).items()}
+    special_map = {
+        str(key): value for key, value in (spec.get("special_map") or {}).items()
+    }
     special = {str(value) for value in spec.get("special_to_null", [])}
     transformed: list[Any] = []
     unmapped: Counter[str] = Counter()
@@ -459,7 +462,9 @@ def _transform_series(
         if code is None or code in special:
             transformed.append(np.nan)
             continue
-        if mapping:
+        if code in special_map:
+            out = special_map[code]
+        elif mapping:
             if code not in mapping:
                 unmapped[code] += 1
                 transformed.append(np.nan)
@@ -495,6 +500,7 @@ def _transform_series(
         "unmapped_codes": dict(sorted(unmapped.items())),
         "impossible_values": dict(sorted(impossible.items())),
         "expected_special_to_null": sorted(special),
+        "expected_special_map": dict(sorted(special_map.items())),
         "null_count": int(output.isna().sum()),
     }
 
@@ -530,11 +536,13 @@ def _review_row(
     eph_support = set(eph_report["canonical_support"])
     census_support = set(census_report["canonical_support"])
     census_only = sorted(census_support - eph_support)
+    diagnostics: list[dict[str, Any]] = []
     if record["semantic_decision"] == "approve" and census_only:
-        violations.append({
+        diagnostics.append({
             "type": "census_canonical_category_absent_from_training",
             "concept": concept,
             "detail": census_only,
+            "interpretation": "statistical_support_not_semantic_incompatibility",
         })
 
     review = {
@@ -561,6 +569,7 @@ def _review_row(
         "eph": eph_report,
         "census": census_report,
         "violations": violations,
+        "diagnostics": diagnostics,
     }
     return review, eph_out, census_out, support
 
@@ -650,6 +659,12 @@ def _semantic_compatibility_payload(result: dict[str, Any]) -> dict[str, Any]:
         for violation in support["violations"]
         if support["concept"] in approved
     ]
+    diagnostics = [
+        diagnostic
+        for support in result["support_rows"]
+        for diagnostic in support.get("diagnostics", [])
+        if support["concept"] in approved
+    ]
     return {
         "schema": "research.eph-census-semantic-compatibility/v1",
         "release_id": result["policy"]["release_id"],
@@ -660,6 +675,7 @@ def _semantic_compatibility_payload(result: dict[str, Any]) -> dict[str, Any]:
         "census_rows": len(result["census_frame"]),
         "concepts": result["support_rows"],
         "violations": violations,
+        "diagnostics": diagnostics,
     }
 
 
