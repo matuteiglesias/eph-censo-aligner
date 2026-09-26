@@ -4,11 +4,12 @@
 
 ## Active real-review evidence
 
-The current exact review pair is no longer synthetic-only:
+The current exact review pair is no longer synthetic-only. It is one **policy instance** of a donor-vintage-neutral compiler:
 
 - EPH release: `eph-2024-q3-3b6a7a15c4af`;
 - CPV-2010 frame: `arg-cpv2010-frame-ee6ada167c2d6429`;
-- Census sample: `census-sample-2024-0839713eafea8d1b` (`research.census-target-year-sample/v2`, full payload).
+- Census sample: `census-sample-2024-0839713eafea8d1b` (`research.census-target-year-sample/v2`, full payload);
+- clocks pinned by policy: EPH `2024-Q3`, donor vintage `2010`, sampling target year `2024`.
 
 Machine-native official source semantics for the 23 current candidate concepts are bound in:
 
@@ -20,6 +21,12 @@ Machine-native official source semantics for the 23 current candidate concepts a
 The codebook layer distinguishes raw producer field identity from REDATAM presentation/derived aliases. For example, the real CPV source payload uses raw `P07`, `P08`, `P09`, `P10`, while some REDATAM dictionary views expose names such as `P1707`, `P1808`, `P1909`, `P2010`. Do not rewrite raw producer identities from presentation aliases.
 
 Official source documents are pointers/evidence, not copied manuals. The active EPH register-design PDF and the CPV-2010 database-definitions PDF provide field definitions/codes; the Census basic questionnaire supplies instrument wording, universe and skip logic. A mapping still requires exact-release support and reviewer judgment.
+
+### Donor-vintage consolidation rule
+
+A future CPV-2022 review must not fork the implementation. It supplies a new exact policy/codebook evidence bundle to the same compiler. The policy must pin `census_vintage=2022`, exact frame/sample parents and the sampling target period. Concept names may be reused only when source definitions support the same canonical meaning.
+
+Changing donor vintage does **not** automatically preserve a prior semantic decision or temporal role. It triggers source-backed review, while downstream statistical transport remains outside this repository.
 
 ## Decisions required
 
