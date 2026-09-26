@@ -28,6 +28,27 @@ A future CPV-2022 review must not fork the implementation. It supplies a new exa
 
 Changing donor vintage does **not** automatically preserve a prior semantic decision or temporal role. It triggers source-backed review, while downstream statistical transport remains outside this repository.
 
+### Semantic compatibility versus statistical support
+
+The real semantic compiler now treats these as different evidence classes:
+
+- **hard semantic violations**: unexpected raw codes after reviewed special handling,
+  impossible canonical values, identity/schema/custody failures;
+- **nonblocking support diagnostics**: a valid canonical Census category is absent
+  from the realized EPH quarter.
+
+The latter must remain visible for downstream transport/support analysis, but it
+must not make semantic materialization fail merely because one EPH quarter does
+not realize every valid Census category.
+
+For the exact 2024-Q3/CPV-2010 policy, source-era zero/special values outside the
+documented substantive question domains are handled explicitly in the policy.
+This is not a generic "zero means missing" rule. The current bounded policy
+covers only reviewed concepts and preserves unexpected values as hard failures.
+
+EPH CH06=-1 is handled separately as the established infant-age sentinel and
+maps to canonical age 0 rather than null.
+
 ## Decisions required
 
 1. **All renamed cross-survey concepts:** compare official source definitions, questionnaire universe/reference period, exact-release support and category domains; code resemblance is not equivalence.
