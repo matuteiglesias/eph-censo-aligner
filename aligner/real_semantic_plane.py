@@ -143,6 +143,41 @@ def _read_delimited(path: Path, *, delimiter: str, encoding: str) -> pd.DataFram
         raise RealSemanticPlaneError(f"source_table_read_failed:{path}") from exc
 
 
+def _expected_eph_year_quarter(policy: dict[str, Any]) -> tuple[int, int]:
+    period = str(policy["clocks"]["eph_period"])
+    try:
+        year_text, quarter_text = period.split("-Q", 1)
+        year = int(year_text)
+        quarter = int(quarter_text)
+    except (ValueError, TypeError) as exc:
+        raise RealSemanticPlaneError("review_policy_eph_period_invalid") from exc
+    if year < 2000 or quarter not in {1, 2, 3, 4}:
+        raise RealSemanticPlaneError("review_policy_eph_period_invalid")
+    return year, quarter
+
+
+def _verify_eph_frame_period(
+    frame: pd.DataFrame, policy: dict[str, Any], *, role: str
+) -> None:
+    for column in ("ANO4", "TRIMESTRE"):
+        if column not in frame.columns:
+            raise RealSemanticPlaneError(f"eph_period_column_missing:{role}:{column}")
+    expected_year, expected_quarter = _expected_eph_year_quarter(policy)
+    years = {
+        int(value)
+        for value in pd.to_numeric(frame["ANO4"], errors="raise").dropna().unique()
+    }
+    quarters = {
+        int(value)
+        for value in pd.to_numeric(frame["TRIMESTRE"], errors="raise").dropna().unique()
+    }
+    if years != {expected_year} or quarters != {expected_quarter}:
+        raise RealSemanticPlaneError(
+            f"eph_period_mismatch:{role}:observed_years={sorted(years)}:"
+            f"observed_quarters={sorted(quarters)}:expected={expected_year}-Q{expected_quarter}"
+        )
+
+
 def _verify_eph_release(
     root: Path, policy: dict[str, Any]
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
@@ -177,6 +212,8 @@ def _verify_eph_release(
             delimiter=str(record.get("delimiter") or ";"),
             encoding=str(record.get("encoding") or "utf-8"),
         )
+    _verify_eph_frame_period(frames["individual"], policy, role="individual")
+    _verify_eph_frame_period(frames["household"], policy, role="household")
     return frames["individual"], frames["household"], manifest
 
 
