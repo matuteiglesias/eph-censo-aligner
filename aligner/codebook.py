@@ -19,7 +19,9 @@ class CodebookError(ValueError):
     """Raised when semantic evidence is incomplete or internally ambiguous."""
 
 
-def validate_codebook_pair(value: dict[str, Any]) -> None:
+def validate_codebook_pair(
+    value: dict[str, Any], *, expected_concepts: set[str] | None = None
+) -> None:
     if value.get("schema") != "research.eph-census-codebook-pair/v1":
         raise CodebookError("unexpected_codebook_schema")
     pair = value.get("pair")
@@ -41,10 +43,13 @@ def validate_codebook_pair(value: dict[str, Any]) -> None:
     names = [record.get("concept") for record in concepts if isinstance(record, dict)]
     if len(names) != len(concepts) or len(set(names)) != len(names):
         raise CodebookError("codebook_concepts_duplicate_or_invalid")
-    if set(names) != EXPECTED_CONCEPTS:
-        missing = sorted(EXPECTED_CONCEPTS - set(names))
-        extra = sorted(set(names) - EXPECTED_CONCEPTS)
-        raise CodebookError(f"codebook_concept_surface_mismatch:missing={missing}:extra={extra}")
+    expected = EXPECTED_CONCEPTS if expected_concepts is None else set(expected_concepts)
+    if set(names) != expected:
+        missing = sorted(expected - set(names))
+        extra = sorted(set(names) - expected)
+        raise CodebookError(
+            f"codebook_concept_surface_mismatch:missing={missing}:extra={extra}"
+        )
 
     for record in concepts:
         concept = record["concept"]
@@ -59,15 +64,24 @@ def validate_codebook_pair(value: dict[str, Any]) -> None:
                     raise CodebookError(f"codebook_evidence_missing:{concept}:{side}:{required}")
 
 
-def load_real_codebook_pair() -> dict[str, Any]:
-    value = json.loads(REAL_2024Q3_CPV2010.read_text(encoding="utf-8"))
-    validate_codebook_pair(value)
+def load_codebook_pair(
+    path: Path, *, expected_concepts: set[str] | None = None
+) -> dict[str, Any]:
+    """Load one exact reviewed EPH/Census codebook pair from a pinned path."""
+    path = Path(path)
+    value = json.loads(path.read_text(encoding="utf-8"))
+    validate_codebook_pair(value, expected_concepts=expected_concepts)
     return value
 
 
-def concept_evidence(concept: str) -> dict[str, Any]:
+def load_real_codebook_pair() -> dict[str, Any]:
+    """Backward-compatible loader for the first qualified 2024Q3/CPV2010 pair."""
+    return load_codebook_pair(REAL_2024Q3_CPV2010)
+
+
+def concept_evidence(concept: str, *, path: Path | None = None) -> dict[str, Any]:
     """Return one exact concept record; no fuzzy or alias lookup is allowed."""
-    codebook = load_real_codebook_pair()
+    codebook = load_real_codebook_pair() if path is None else load_codebook_pair(path)
     for record in codebook["concepts"]:
         if record["concept"] == concept:
             return record

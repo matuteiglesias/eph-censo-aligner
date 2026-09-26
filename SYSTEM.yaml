@@ -9,7 +9,7 @@ system: research.eph-census
 role: semantic-alignment-component
 lifecycle: active-bounded
 authority:
-  status: current-boundary-real-vintage-review-pending
+  status: current-boundary-policy-driven-real-review
   owns:
   - versioned EPH-to-Census and Census-to-EPH semantic mappings
   - validation, loss/ambiguity reporting and alignment outputs
@@ -58,24 +58,28 @@ generated_paths:
 scientific_invariants:
 - semantic alignment never implies statistical transport validity
 - real-vintage approval must bind exact EPH and Census release identities
+- Census donor vintage is a policy parent, never a reusable-code branch
+- census_frame_vintage, sampling_target_period and EPH period remain distinct clocks
 - shared_observable and derived_shared are the only classes eligible as external Census model inputs
 - stage_target may be supervised on the EPH side but is not required as a Census observable
 - historical code/name similarity is evidence for review only, never sufficient approval
 - sampler selection_probability and design weights are not semantic model features
 - target-period temporal admissibility is decided by the transport consumer after semantic alignment
 verification:
-  status: fixture-implemented-real-vintage-review-pending
-  last_verified: '2026-09-10'
+  status: fixture-plus-source-backed-cpv2010-policy
+  last_verified: '2026-09-26'
   command: make check && make test && make smoke && make release-fixture
   supported_vintages:
   - fixture-v1
+  - exact-policy: EPH-2024-Q3 / CPV-2010
   evidence:
   - package/install/fixture runtime is green after CI packaging repairs
-  - current real producer contracts are explicit in this boundary
+  - exact CPV-2010 real review policy pins parents, clocks and codebook evidence
+  - reusable real compiler is donor-vintage-neutral and accepts policy-selected CPV-2010/CPV-2022 evidence
   unknowns:
-  - all real EPH and Census source vintages require source-backed semantic review
-  - no deployment feature category is approved for real Census inference yet
-  - first real handoff must inspect exact EPH and Census schemas before approving the minimal shared feature plane
+  - CPV-2022 requires its own source-backed semantic review policy before use
+  - semantic approval does not establish target-period transport validity
+  - support/domain-shift qualification remains downstream in repo.encuestador-de-hogares
 maintenance:
   cadence: active-development
   next_review: '2026-11-01'
