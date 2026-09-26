@@ -365,15 +365,33 @@ def _observed_support(series: pd.Series) -> list[str]:
     return sorted(values, key=lambda value: (not value.lstrip("-").isdigit(), value))
 
 
-def _code_meanings(concept: str, side: str) -> dict[str, Any]:
-    for path in (PERSON_CODES_PATH, HOUSEHOLD_CODES_PATH):
-        value = _load_json(path)
+def _load_policy_evidence(
+    policy: dict[str, Any], policy_path: Path
+) -> dict[str, Any]:
+    paths = _evidence_paths(policy, Path(policy_path).expanduser().resolve())
+    expected = {row["concept"] for row in policy["concepts"]}
+    return {
+        "paths": paths,
+        "codebook_pair": load_codebook_pair(
+            paths["codebook_pair"], expected_concepts=expected
+        ),
+        "supplemental_codes": [
+            _load_json(paths["person_codes"]),
+            _load_json(paths["household_codes"]),
+        ],
+    }
+
+
+def _code_meanings(
+    concept: str, side: str, evidence: dict[str, Any]
+) -> dict[str, Any]:
+    for value in evidence["supplemental_codes"]:
         record = (value.get("concepts") or {}).get(concept)
         if isinstance(record, dict):
             side_value = record.get(side)
             if isinstance(side_value, dict):
                 return side_value
-    for record in load_real_codebook_pair()["concepts"]:
+    for record in evidence["codebook_pair"]["concepts"]:
         if record["concept"] == concept:
             source = record[side]
             return {
@@ -450,7 +468,12 @@ def _review_row(
     record: dict[str, Any],
     eph: pd.DataFrame,
     census: pd.DataFrame,
+    *,
+    evidence: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], pd.Series, pd.Series, dict[str, Any]]:
+    if evidence is None:
+        default_policy = load_review_policy(POLICY_PATH)
+        evidence = _load_policy_evidence(default_policy, POLICY_PATH)
     concept = record["concept"]
     eph_spec = dict(record["eph"])
     census_spec = dict(record["census"])
@@ -485,8 +508,8 @@ def _review_row(
         "census_raw_source": census_spec["field"],
         "eph_universe": eph_spec.get("universe"),
         "census_universe": census_spec.get("universe"),
-        "eph_code_meanings": _code_meanings(concept, "eph"),
-        "census_code_meanings": _code_meanings(concept, "census"),
+        "eph_code_meanings": _code_meanings(concept, "eph", evidence),
+        "census_code_meanings": _code_meanings(concept, "census", evidence),
         "observed_eph_support": eph_report["raw_support"],
         "observed_census_support": census_report["raw_support"],
         "proposed_common_representation": record.get("common_representation"),
@@ -507,10 +530,19 @@ def _review_row(
     return review, eph_out, census_out, support
 
 
-def build_real_review(eph_release_root: Path, census_sample_root: Path) -> dict[str, Any]:
-    policy = load_review_policy()
-    individual, household, eph_manifest = _verify_eph_release(eph_release_root)
-    census_tables, census_manifest, census_qa = _verify_census_release(census_sample_root)
+def build_real_review(
+    eph_release_root: Path,
+    census_sample_root: Path,
+    *,
+    policy_path: Path = POLICY_PATH,
+) -> dict[str, Any]:
+    policy_path = Path(policy_path).expanduser().resolve()
+    policy = load_review_policy(policy_path)
+    evidence = _load_policy_evidence(policy, policy_path)
+    individual, household, eph_manifest = _verify_eph_release(eph_release_root, policy)
+    census_tables, census_manifest, census_qa = _verify_census_release(
+        census_sample_root, policy
+    )
     eph = _eph_person_frame(individual, household)
     census = _census_person_frame(census_tables)
 
@@ -519,7 +551,9 @@ def build_real_review(eph_release_root: Path, census_sample_root: Path) -> dict[
     transformed_eph: dict[str, pd.Series] = {}
     transformed_census: dict[str, pd.Series] = {}
     for record in policy["concepts"]:
-        row, eph_out, census_out, support = _review_row(record, eph, census)
+        row, eph_out, census_out, support = _review_row(
+            record, eph, census, evidence=evidence
+        )
         rows.append(row)
         supports.append(support)
         transformed_eph[record["concept"]] = eph_out
@@ -527,6 +561,8 @@ def build_real_review(eph_release_root: Path, census_sample_root: Path) -> dict[
 
     return {
         "policy": policy,
+        "policy_path": policy_path,
+        "evidence": evidence,
         "review_rows": rows,
         "support_rows": supports,
         "eph_frame": eph,
@@ -594,8 +630,12 @@ def write_real_review(
     eph_release_root: Path,
     census_sample_root: Path,
     output_dir: Path,
+    *,
+    policy_path: Path = POLICY_PATH,
 ) -> dict[str, Any]:
-    result = build_real_review(eph_release_root, census_sample_root)
+    result = build_real_review(
+        eph_release_root, census_sample_root, policy_path=policy_path
+    )
     output_dir = Path(output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     review_path = output_dir / "semantic_review_matrix.json"
@@ -621,8 +661,12 @@ def materialize_real_plane(
     eph_release_root: Path,
     census_sample_root: Path,
     output_dir: Path,
+    *,
+    policy_path: Path = POLICY_PATH,
 ) -> dict[str, Any]:
-    result = build_real_review(eph_release_root, census_sample_root)
+    result = build_real_review(
+        eph_release_root, census_sample_root, policy_path=policy_path
+    )
     policy = result["policy"]
     p1s, p1r, unresolved, rejected = plane_fields(policy)
     output_dir = Path(output_dir).expanduser().resolve()
@@ -674,6 +718,8 @@ def materialize_real_plane(
         "release_id": policy["release_id"],
         "status": "candidate_for_encuestador_eph_adjudication",
         "parents": policy["parents"],
+        "clocks": policy["clocks"],
+        "contracts": policy["contracts"],
         "canonical_schema": list(eph_plane.columns),
         "p1_s_fields": p1s,
         "p1_r_fields": p1r,
@@ -681,17 +727,19 @@ def materialize_real_plane(
         "unresolved_fields": unresolved,
         "transformations": {
             "eph_raw_to_canonical_plane": {
-                "source_release": EPH_RELEASE_ID,
-                "policy": POLICY_PATH.name,
+                "source_release": policy["parents"]["eph_release_id"],
+                "policy": result["policy_path"].name,
                 "matrix": eph_path.name,
                 "rows": len(eph_plane),
                 "columns": len(eph_plane.columns),
                 "sha256": _sha256(eph_path),
             },
-            "cpv_raw_to_canonical_plane": {
-                "source_release": CENSUS_SAMPLE_ID,
-                "frame_parent": CENSUS_FRAME_ID,
-                "policy": POLICY_PATH.name,
+            "census_raw_to_canonical_plane": {
+                "source_release": policy["parents"]["census_sample_release_id"],
+                "frame_parent": policy["parents"]["census_frame_release_id"],
+                "census_vintage": policy["clocks"]["census_vintage"],
+                "sampling_target_year": policy["clocks"]["sampling_target_year"],
+                "policy": result["policy_path"].name,
                 "matrix": census_path.name,
                 "rows": len(census_plane),
                 "columns": len(census_plane.columns),
@@ -701,7 +749,7 @@ def materialize_real_plane(
         "review_matrix": {
             "path": review_path.name,
             "sha256": _sha256(review_path),
-            "row_count": 23,
+            "row_count": len(policy["concepts"]),
         },
         "support_report": {
             "path": support_path.name,
