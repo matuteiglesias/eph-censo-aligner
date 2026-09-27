@@ -49,6 +49,22 @@ covers only reviewed concepts and preserves unexpected values as hard failures.
 EPH CH06=-1 is handled separately as the established infant-age sentinel and
 maps to canonical age 0 rather than null.
 
+### Exact-pair residual closure
+
+For the exact 2024-Q3 / CPV-2010 policy, the final observed hard residuals are
+handled without widening the generic compiler:
+
+- Census IX_TOT uses exact complete household membership and is validated only
+  as a positive integer; no arbitrary upper clipping is applied.
+- EPH CH13=0 and II7/II8/II9=0 are treated as exact-release not-applicable
+  sentinels.
+- EPH CH09=9 and CH10=9 are treated as exact-release missing sentinels because
+  they fall outside the documented substantive 1..3 domains.
+- Any neighboring unreviewed code remains a hard failure.
+
+These rules belong to this reviewed policy instance and are not inherited by a
+future CPV-2022 policy automatically.
+
 ## Decisions required
 
 1. **All renamed cross-survey concepts:** compare official source definitions, questionnaire universe/reference period, exact-release support and category domains; code resemblance is not equivalence.
