@@ -35,8 +35,7 @@
       "reviewer_reason": "Same household-size concept is constructible on both sides, but 2010 household composition is not established as 2024 state.",
       "validation": {
         "kind": "integer",
-        "min": 1,
-        "max": 40
+        "min": 1
       }
     },
     {
@@ -152,7 +151,8 @@
         },
         "special_to_null": [
           0,
-          3
+          3,
+          9
         ],
         "universe": "age 2+ after removing EPH under-2 special state"
       },
@@ -188,7 +188,8 @@
         "field": "CH10",
         "map": {},
         "special_to_null": [
-          0
+          0,
+          9
         ],
         "universe": "education-question universe"
       },
@@ -266,6 +267,7 @@
           "2": 2
         },
         "special_to_null": [
+          0,
           9
         ],
         "universe": "persons with a declared education level"
@@ -645,7 +647,9 @@
           "3": 2
         },
         "special_to_null": [
-          4
+          0,
+          4,
+          9
         ],
         "universe": "household; common representation conditional on bathroom existence"
       },
@@ -685,7 +689,10 @@
           "3": 3,
           "4": 4
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0,
+          9
+        ],
         "universe": "household records"
       },
       "census": {
@@ -788,7 +795,9 @@
           "8": 5,
           "9": 5
         },
-        "special_to_null": [],
+        "special_to_null": [
+          0
+        ],
         "universe": "household records"
       },
       "census": {
@@ -843,6 +852,15 @@
         "EPH CH06=-1 is normalized to age 0, preserving the established source-era infant-age handling.",
         "EPH zero/99 values outside documented education/bathroom substantive domains are treated as null; CH09=3 remains an explicit under-2 special and is null on the common literacy plane.",
         "Valid canonical Census categories absent from one EPH quarter are statistical support diagnostics and do not fail semantic materialization."
+      ]
+    },
+    "final_real_residuals_2024q3_cpv2010": {
+      "status": "reviewed-bounded",
+      "rationale": [
+        "IX_TOT is derived from exact complete sample membership; positive integer validation is semantic, while extreme household sizes are retained for downstream support diagnostics rather than clipped or rejected.",
+        "EPH CH13=0 and II7/II8/II9=0 are exact-release not-applicable sentinels and map to null on the common plane.",
+        "EPH CH09=9 and CH10=9 occur only in the exact 2024-Q3 release, fall outside the documented substantive 1..3 domains, and are treated as missing sentinels for this policy instance.",
+        "No blanket 0/9 coercion is introduced; unexpected codes outside these reviewed exceptions remain hard failures."
       ]
     }
   }
