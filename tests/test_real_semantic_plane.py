@@ -172,3 +172,37 @@ def test_real_policy_carries_bounded_zero_sentinels_not_blanket_coercion() -> No
     assert set(_record("P07")["eph"]["special_to_null"]) == {0, 3}
     assert set(_record("P09")["eph"]["special_to_null"]) == {0, 99}
     assert set(_record("H12")["eph"]["special_to_null"]) == {0}
+
+
+def test_final_real_policy_residuals_are_bounded_and_explicit() -> None:
+    ix = _record("IX_TOT")
+    assert ix["validation"] == {"kind": "integer", "min": 1}
+
+    assert set(_record("P07")["eph"]["special_to_null"]) == {0, 3, 9}
+    assert set(_record("P08")["eph"]["special_to_null"]) == {0, 9}
+    assert set(_record("P10")["eph"]["special_to_null"]) == {0, 9}
+    assert set(_record("H13")["eph"]["special_to_null"]) == {0, 4, 9}
+    assert set(_record("H14")["eph"]["special_to_null"]) == {0, 9}
+    assert set(_record("PROP")["eph"]["special_to_null"]) == {0}
+
+
+def test_ix_tot_large_positive_counts_remain_canonical_not_clipped() -> None:
+    record = _record("IX_TOT")
+    values, report = _transform_series(
+        pd.Series([1, 40, 43, 486]),
+        record["census"],
+        record["validation"],
+    )
+    assert values.tolist() == [1, 40, 43, 486]
+    assert report["impossible_values"] == {}
+
+
+def test_unreviewed_neighbor_codes_still_fail_closed() -> None:
+    record = _record("P07")
+    _, report = _transform_series(
+        pd.Series([1, 2, 8, 9]),
+        record["eph"],
+        record["validation"],
+    )
+    assert report["unmapped_codes"] == {"8": 1}
+    assert report["expected_special_to_null"] == ["0", "3", "9"]
