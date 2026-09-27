@@ -75,7 +75,7 @@ def test_expected_special_codes_become_null_but_unexpected_codes_are_reported() 
     assert values.iloc[1] == 2
     assert pd.isna(values.iloc[2])
     assert pd.isna(values.iloc[3])
-    assert report["expected_special_to_null"] == ["9"]
+    assert report["expected_special_to_null"] == ["0", "9"]
     assert report["expected_special_map"] == {}
     assert report["unmapped_codes"] == {"7": 1}
 
@@ -169,9 +169,14 @@ def test_real_policy_carries_bounded_zero_sentinels_not_blanket_coercion() -> No
     assert set(_record("CONDACT")["census"]["special_to_null"]) == {0}
     assert set(_record("H12")["census"]["special_to_null"]) == {0}
     assert set(_record("PROP")["census"]["special_to_null"]) == {0}
-    assert set(_record("P07")["eph"]["special_to_null"]) == {0, 3}
+    assert set(_record("P07")["eph"]["special_to_null"]) == {0, 3, 9}
+    assert set(_record("P08")["eph"]["special_to_null"]) == {0, 9}
     assert set(_record("P09")["eph"]["special_to_null"]) == {0, 99}
+    assert set(_record("P10")["eph"]["special_to_null"]) == {0, 9}
     assert set(_record("H12")["eph"]["special_to_null"]) == {0}
+    assert set(_record("H13")["eph"]["special_to_null"]) == {0, 4, 9}
+    assert set(_record("H14")["eph"]["special_to_null"]) == {0, 9}
+    assert set(_record("PROP")["eph"]["special_to_null"]) == {0}
 
 
 def test_final_real_policy_residuals_are_bounded_and_explicit() -> None:
