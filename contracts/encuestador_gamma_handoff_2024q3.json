@@ -11,10 +11,22 @@
     "manifest": "feature_plane_manifest.json",
     "eph_features": "eph_p1.parquet",
     "census_features": "census_p1.parquet",
-    "support": "support_report.json",
-    "review": "semantic_review_matrix.json",
     "donor_labor_state": "census_donor_labor_state.parquet",
-    "donor_labor_qa": "donor_labor_qa.json"
+    "donor_labor_qa": "donor_labor_qa.json",
+    "support": "support_report.json",
+    "review": "semantic_review_matrix.json"
+  },
+  "donor_labor_handoff": {
+    "source_side": "census",
+    "source_field": "CONDACT",
+    "value_field": "donor_condact",
+    "vintage_field": "donor_condact_vintage",
+    "semantic_status_field": "donor_condact_semantic_status",
+    "donor_vintage": 2010,
+    "observation_clock": "census_vintage",
+    "target_period_current_state_claimed": false,
+    "eph_training_analogue": "must_be_built_downstream_from_repeated_wave_eph_evidence",
+    "forbidden_shortcut": "do_not_copy_current_eph_estado_or_condact_into_donor_condact"
   },
   "canonical_identity": {
     "person": "row_id",
@@ -36,76 +48,20 @@
     "census_scoring": "forbidden until EPH comparison is adjudicated"
   },
   "feature_planes": {
-    "P1-S": [
-      "P02",
-      "P05"
-    ],
-    "P1-R": [
-      "IX_TOT",
-      "P02",
-      "P03",
-      "P05",
-      "P07",
-      "P08",
-      "P09",
-      "P10",
-      "CONDACT",
-      "V01",
-      "H05",
-      "H07",
-      "H08",
-      "H09",
-      "H10",
-      "H12",
-      "H13",
-      "H14",
-      "H15",
-      "PROP"
-    ]
+    "P1-S": ["P02", "P05"],
+    "P1-R": ["IX_TOT", "P02", "P03", "P05", "P07", "P08", "P09", "P10", "CONDACT", "V01", "H05", "H07", "H08", "H09", "H10", "H12", "H13", "H14", "H15", "PROP"]
   },
   "matched_experiment_matrix": [
-    {
-      "run_id": "P0-S",
-      "architecture": "direct",
-      "feature_plane": "P1-S"
-    },
-    {
-      "run_id": "P1-S",
-      "architecture": "lean",
-      "feature_plane": "P1-S"
-    },
-    {
-      "run_id": "P0-R",
-      "architecture": "direct",
-      "feature_plane": "P1-R"
-    },
-    {
-      "run_id": "P1-R",
-      "architecture": "lean",
-      "feature_plane": "P1-R"
-    }
+    {"run_id": "P0-S", "architecture": "direct", "feature_plane": "P1-S"},
+    {"run_id": "P1-S", "architecture": "lean", "feature_plane": "P1-S"},
+    {"run_id": "P0-R", "architecture": "direct", "feature_plane": "P1-R"},
+    {"run_id": "P1-R", "architecture": "lean", "feature_plane": "P1-R"}
   ],
   "required_comparisons": [
-    {
-      "left": "P0-S",
-      "right": "P1-S",
-      "question": "latent architecture value under target-year-defensible information"
-    },
-    {
-      "left": "P0-R",
-      "right": "P1-R",
-      "question": "latent architecture value under broader research information"
-    },
-    {
-      "left": "P0-S",
-      "right": "P0-R",
-      "question": "effect of broadening external information on the direct baseline"
-    },
-    {
-      "left": "P1-S",
-      "right": "P1-R",
-      "question": "effect of broadening external information on the lean architecture; not a pure architecture comparison"
-    }
+    {"left": "P0-S", "right": "P1-S", "question": "latent architecture value under target-year-defensible information"},
+    {"left": "P0-R", "right": "P1-R", "question": "latent architecture value under broader research information"},
+    {"left": "P0-S", "right": "P0-R", "question": "effect of broadening external information on the direct baseline"},
+    {"left": "P1-S", "right": "P1-R", "question": "effect of broadening external information on the lean architecture; not a pure architecture comparison"}
   ],
   "required_diagnostics": [
     "person point risk",
@@ -119,23 +75,7 @@
   ],
   "next_cli_contract": {
     "adapter_name": "semantic_plane_parquet_v1",
-    "inputs": [
-      "feature_plane_manifest.json",
-      "eph_p1.parquet",
-      "exact EPH release root"
-    ],
+    "inputs": ["feature_plane_manifest.json", "eph_p1.parquet", "exact EPH release root"],
     "required_behavior": "select P1-S/P1-R columns from manifest, join P47T by exact canonical row_id, generate one household FoldManifest, reuse it for all four runs, freeze hurdle-Gamma estimator semantics, and package comparisons"
-  },
-  "donor_labor_handoff": {
-    "source_side": "census",
-    "source_field": "CONDACT",
-    "value_field": "donor_condact",
-    "vintage_field": "donor_condact_vintage",
-    "semantic_status_field": "donor_condact_semantic_status",
-    "donor_vintage": 2010,
-    "observation_clock": "census_vintage",
-    "target_period_current_state_claimed": false,
-    "eph_training_analogue": "must_be_built_downstream_from_repeated_wave_eph_evidence",
-    "forbidden_shortcut": "do_not_copy_current_eph_estado_or_condact_into_donor_condact"
   }
 }
