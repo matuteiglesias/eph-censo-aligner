@@ -101,7 +101,7 @@
         "universe": "population age 14+"
       },
       "review_status": "pending",
-      "known_semantic_risk": "EPH and Census activity categories are comparable only after universe review, but their observation clocks differ: EPH ESTADO is observed at the EPH quarter while Census CONDACT is observed at the donor Census vintage.",
+      "known_semantic_risk": "EPH and Census activity categories are comparable only after universe review, but their temporal observation clocks differ: EPH ESTADO is observed at the EPH quarter while Census CONDACT is observed at the donor Census vintage.",
       "clock_evidence": {
         "eph": "policy.clocks.eph_period",
         "census": "policy.clocks.census_vintage",
