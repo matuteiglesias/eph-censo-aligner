@@ -15,6 +15,7 @@ authority:
   - validation, loss/ambiguity reporting and alignment outputs
   - vocabulary for declaring model-facing deployment observability
   - real-vintage semantic review records binding exact upstream source/release identities
+  - donor-vintage semantic handoffs that preserve source clocks and exact Census identities
   does_not_own:
   - raw EPH or Census acquisition
   - Argentine geography authority or geographic crosswalks
@@ -59,7 +60,9 @@ scientific_invariants:
 - semantic alignment never implies statistical transport validity
 - real-vintage approval must bind exact EPH and Census release identities
 - Census donor vintage is a policy parent, never a reusable-code branch
-- census_frame_vintage, sampling_target_period and EPH period remain distinct clocks
+- census_frame_vintage, donor labor vintage, sampling target period and EPH period remain distinct clocks
+- Census donor labor state is never relabeled as target-period current labor state
+- no EPH donor-state training analogue is fabricated by copying current EPH labor state
 - shared_observable and derived_shared are the only classes eligible as external Census model inputs
 - stage_target may be supervised on the EPH side but is not required as a Census observable
 - historical code/name similarity is evidence for review only, never sufficient approval
@@ -75,6 +78,7 @@ verification:
   evidence:
   - package/install/fixture runtime is green after CI packaging repairs
   - exact CPV-2010 real review policy pins parents, clocks and codebook evidence
+  - explicit donor-labor handoff preserves Census donor vintage, sample/frame identity and missing/universe QA
   - reusable real compiler is donor-vintage-neutral and accepts policy-selected CPV-2010/CPV-2022 evidence
   unknowns:
   - CPV-2022 requires its own source-backed semantic review policy before use
