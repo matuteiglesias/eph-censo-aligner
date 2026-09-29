@@ -26,6 +26,7 @@ def _record(concept: str) -> dict:
 def test_real_review_policy_is_exact_23_and_separates_temporal_planes() -> None:
     policy = load_review_policy()
     assert len(policy["concepts"]) == 23
+    assert policy["release_id"] == "eph-cpv2010-semantic-plane-2024q3-v2"
     assert policy["parents"] == {
         "eph_release_id": "eph-2024-q3-3b6a7a15c4af",
         "census_frame_release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
