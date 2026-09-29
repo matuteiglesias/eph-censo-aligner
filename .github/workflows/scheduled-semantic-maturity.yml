@@ -75,10 +75,33 @@ jobs:
               raise SystemExit(f"unexpected review policy schema: {policy.get('schema')!r}")
 
           release_id = policy.get("release_id")
-          if release_id != "eph-cpv2010-semantic-plane-2024q3-v1":
+          if release_id != "eph-cpv2010-semantic-plane-2024q3-v2":
               raise SystemExit(f"unexpected frozen research release id: {release_id!r}")
           if handoff.get("semantic_plane_release_id") != release_id:
               raise SystemExit("handoff semantic-plane release id diverges from review policy")
+
+          donor_policy = policy.get("donor_labor_handoff") or {}
+          donor_handoff = handoff.get("donor_labor_handoff") or {}
+          required_donor = {
+              "source_side": "census",
+              "source_field": "CONDACT",
+              "value_field": "donor_condact",
+              "vintage_field": "donor_condact_vintage",
+              "semantic_status_field": "donor_condact_semantic_status",
+          }
+          for key, expected in required_donor.items():
+              if donor_policy.get(key) != expected:
+                  raise SystemExit(f"review policy donor-labor mismatch for {key}")
+              if donor_handoff.get(key) != expected:
+                  raise SystemExit(f"encuestador donor-labor handoff mismatch for {key}")
+          if donor_policy.get("vintage_clock") != "census_vintage":
+              raise SystemExit("donor-labor policy does not bind census_vintage")
+          if donor_handoff.get("donor_vintage") != policy.get("clocks", {}).get("census_vintage"):
+              raise SystemExit("donor-labor handoff vintage diverges from policy clock")
+          if donor_handoff.get("target_period_current_state_claimed") is not False:
+              raise SystemExit("donor labor must not be labeled as current target-period state")
+          if donor_policy.get("eph_training_analogue") != "not_materialized_here":
+              raise SystemExit("aligner must not fabricate an EPH donor-state analogue")
 
           policy_parents = policy.get("parents", {})
           handoff_parents = handoff.get("parents", {})
