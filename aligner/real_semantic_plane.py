@@ -121,6 +121,54 @@ def load_review_policy(path: Path = POLICY_PATH) -> dict[str, Any]:
             if not isinstance(spec, dict) or not spec.get("field"):
                 raise RealSemanticPlaneError(f"review_policy_side_missing:{concept}:{side}")
 
+    donor_labor = value.get("donor_labor_handoff")
+    if donor_labor is not None:
+        if not isinstance(donor_labor, dict):
+            raise RealSemanticPlaneError("review_policy_donor_labor_handoff_invalid")
+        required = {
+            "schema": "research.eph-census-donor-labor-handoff-policy/v1",
+            "concept": "CONDACT",
+            "source_side": "census",
+            "source_field": "CONDACT",
+            "value_field": "donor_condact",
+            "vintage_field": "donor_condact_vintage",
+            "semantic_status_field": "donor_condact_semantic_status",
+            "vintage_clock": "census_vintage",
+            "eph_training_analogue": "not_materialized_here",
+            "target_period_current_state_claimed": False,
+        }
+        for key, expected in required.items():
+            if donor_labor.get(key) != expected:
+                raise RealSemanticPlaneError(
+                    f"review_policy_donor_labor_handoff_invalid:{key}"
+                )
+        if donor_labor.get("age_field") != "P03":
+            raise RealSemanticPlaneError("review_policy_donor_labor_age_field_invalid")
+        try:
+            minimum_age = int(donor_labor.get("minimum_age"))
+        except (TypeError, ValueError) as exc:
+            raise RealSemanticPlaneError(
+                "review_policy_donor_labor_minimum_age_invalid"
+            ) from exc
+        if minimum_age < 0:
+            raise RealSemanticPlaneError("review_policy_donor_labor_minimum_age_invalid")
+        condact = next(
+            (row for row in concepts if row.get("concept") == donor_labor["concept"]),
+            None,
+        )
+        if condact is None or condact.get("semantic_decision") != "approve":
+            raise RealSemanticPlaneError("review_policy_donor_labor_concept_not_approved")
+        clock_semantics = condact.get("clock_semantics") or {}
+        if (
+            clock_semantics.get("eph") != "observed_at_eph_period"
+            or clock_semantics.get("census") != "observed_at_census_donor_vintage"
+            or clock_semantics.get(
+                "shared_category_semantics_do_not_equal_shared_observation_clock"
+            )
+            is not True
+        ):
+            raise RealSemanticPlaneError("review_policy_donor_labor_clock_semantics_missing")
+
     paths = _evidence_paths(value, path)
     codebook = load_codebook_pair(paths["codebook_pair"], expected_concepts=seen)
     if codebook.get("pair") != parents:
@@ -574,6 +622,139 @@ def _review_row(
     return review, eph_out, census_out, support
 
 
+def _value_counts(series: pd.Series) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for value in series.tolist():
+        code = _norm_code(value)
+        counts["<missing>" if code is None else code] += 1
+    return dict(sorted(counts.items()))
+
+
+def _donor_labor_handoff(
+    result: dict[str, Any],
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    policy = result["policy"]
+    handoff_policy = policy.get("donor_labor_handoff")
+    if not isinstance(handoff_policy, dict):
+        raise RealSemanticPlaneError("donor_labor_handoff_policy_required")
+
+    concept = handoff_policy["concept"]
+    census = result["census_frame"]
+    transformed = result["transformed_census"].get(concept)
+    if transformed is None:
+        raise RealSemanticPlaneError("donor_labor_transformed_concept_missing")
+    support = next(
+        (row for row in result["support_rows"] if row.get("concept") == concept),
+        None,
+    )
+    if support is None:
+        raise RealSemanticPlaneError("donor_labor_support_report_missing")
+
+    identity_columns = [
+        "row_id",
+        "household_id",
+        "sample_person_id",
+        "sample_household_id",
+        "frame_person_id",
+        "frame_household_id",
+        "frame_dwelling_id",
+    ]
+    missing_identity = [column for column in identity_columns if column not in census.columns]
+    if missing_identity:
+        raise RealSemanticPlaneError(
+            "donor_labor_identity_columns_missing:" + ",".join(missing_identity)
+        )
+    if len(census) != len(transformed):
+        raise RealSemanticPlaneError("donor_labor_row_count_mismatch")
+    if census["row_id"].astype(str).duplicated().any():
+        raise RealSemanticPlaneError("donor_labor_row_identity_not_unique")
+    if census["sample_person_id"].astype(str).duplicated().any():
+        raise RealSemanticPlaneError("donor_labor_sample_person_identity_not_unique")
+
+    age_field = handoff_policy["age_field"]
+    if age_field not in census.columns:
+        raise RealSemanticPlaneError(f"donor_labor_age_field_missing:{age_field}")
+    age = pd.to_numeric(census[age_field], errors="coerce")
+    minimum_age = int(handoff_policy["minimum_age"])
+    eligible = age.ge(minimum_age)
+    outside_universe_nonnull = (~eligible) & transformed.notna()
+    if outside_universe_nonnull.any():
+        raise RealSemanticPlaneError(
+            "donor_labor_nonnull_outside_reviewed_universe:"
+            f"{int(outside_universe_nonnull.sum())}"
+        )
+
+    source_field = handoff_policy["source_field"]
+    if source_field not in census.columns:
+        raise RealSemanticPlaneError(f"donor_labor_source_field_missing:{source_field}")
+    vintage = int(policy["clocks"][handoff_policy["vintage_clock"]])
+
+    handoff = census.loc[:, identity_columns].copy()
+    handoff[handoff_policy["value_field"]] = transformed.to_numpy()
+    handoff[handoff_policy["vintage_field"]] = vintage
+    handoff[handoff_policy["semantic_status_field"]] = np.where(
+        transformed.notna(),
+        handoff_policy["observed_status"],
+        handoff_policy["missing_status"],
+    )
+
+    census_report = support["census"]
+    qa = {
+        "schema": "research.eph-census-donor-labor-qa/v1",
+        "concept": concept,
+        "source_side": "census",
+        "source_field": source_field,
+        "source_universe": next(
+            row["census"].get("universe")
+            for row in policy["concepts"]
+            if row["concept"] == concept
+        ),
+        "donor_vintage": vintage,
+        "eph_period": policy["clocks"]["eph_period"],
+        "sampling_target_year": policy["clocks"]["sampling_target_year"],
+        "rows": len(handoff),
+        "identity_columns": identity_columns,
+        "row_identity_unique": not handoff["row_id"].astype(str).duplicated().any(),
+        "sample_person_identity_unique": not handoff[
+            "sample_person_id"
+        ].astype(str).duplicated().any(),
+        "identity_row_count_preserved": len(handoff) == len(census),
+        "source_value_counts": _value_counts(census[source_field]),
+        "canonical_value_counts": _value_counts(transformed),
+        "raw_support": census_report["raw_support"],
+        "canonical_support": census_report["canonical_support"],
+        "expected_special_to_null": census_report["expected_special_to_null"],
+        "unexpected_source_codes": census_report["unmapped_codes"],
+        "impossible_canonical_values": census_report["impossible_values"],
+        "canonical_null_count": census_report["null_count"],
+        "age_universe": {
+            "field": age_field,
+            "minimum_age": minimum_age,
+            "eligible_rows": int(eligible.sum()),
+            "outside_universe_rows": int((~eligible).sum()),
+            "nonnull_outside_universe_rows": int(outside_universe_nonnull.sum()),
+        },
+        "clock_separation": {
+            "donor_observation_clock": {
+                "kind": "census_donor_vintage",
+                "value": vintage,
+            },
+            "eph_observation_clock": {
+                "kind": "eph_period",
+                "value": policy["clocks"]["eph_period"],
+            },
+            "same_clock": False,
+            "target_period_current_state_claimed": False,
+        },
+        "training_analogue": {
+            "materialized_here": False,
+            "forbidden_shortcut": "do_not_copy_current_eph_estado_or_condact_into_donor_condact",
+            "owner": "repo.encuestador-de-hogares",
+        },
+    }
+    return handoff, qa
+
+
 def build_real_review(
     eph_release_root: Path,
     census_sample_root: Path,
@@ -731,6 +912,8 @@ def materialize_real_plane(
     manifest_path = output_dir / "feature_plane_manifest.json"
     eph_path = output_dir / "eph_p1.parquet"
     census_path = output_dir / "census_p1.parquet"
+    donor_labor_path = output_dir / "census_donor_labor_state.parquet"
+    donor_labor_qa_path = output_dir / "donor_labor_qa.json"
 
     _json(review_path, {
         "schema": "research.eph-census-semantic-review-matrix/v1",
@@ -762,11 +945,15 @@ def materialize_real_plane(
         _json(compatibility_path, compatibility)
         raise RealSemanticPlaneError("canonical_plane_schema_disagreement")
 
+    donor_labor, donor_labor_qa = _donor_labor_handoff(result)
+
     try:
         eph_plane.to_parquet(eph_path, index=False)
         census_plane.to_parquet(census_path, index=False)
+        donor_labor.to_parquet(donor_labor_path, index=False)
     except Exception as exc:
         raise RealSemanticPlaneError("canonical_parquet_write_failed:install_pyarrow") from exc
+    _json(donor_labor_qa_path, donor_labor_qa)
 
     manifest = {
         "schema": "research.eph-census-semantic-feature-plane/v1",
@@ -780,6 +967,27 @@ def materialize_real_plane(
         "p1_r_fields": p1r,
         "rejected_fields": rejected,
         "unresolved_fields": unresolved,
+        "donor_labor_handoff": {
+            "schema": "research.eph-census-donor-labor-handoff/v1",
+            "path": donor_labor_path.name,
+            "sha256": _sha256(donor_labor_path),
+            "qa_path": donor_labor_qa_path.name,
+            "qa_sha256": _sha256(donor_labor_qa_path),
+            "rows": len(donor_labor),
+            "value_field": policy["donor_labor_handoff"]["value_field"],
+            "vintage_field": policy["donor_labor_handoff"]["vintage_field"],
+            "semantic_status_field": policy["donor_labor_handoff"][
+                "semantic_status_field"
+            ],
+            "source_concept": policy["donor_labor_handoff"]["concept"],
+            "source_field": policy["donor_labor_handoff"]["source_field"],
+            "source_release": policy["parents"]["census_sample_release_id"],
+            "frame_parent": policy["parents"]["census_frame_release_id"],
+            "donor_vintage": policy["clocks"]["census_vintage"],
+            "source_clock": "census_vintage",
+            "target_period_current_state_claimed": False,
+            "eph_training_analogue_materialized": False,
+        },
         "transformations": {
             "eph_raw_to_canonical_plane": {
                 "source_release": policy["parents"]["eph_release_id"],
@@ -816,6 +1024,18 @@ def materialize_real_plane(
             "planes": {"P1-S": p1s, "P1-R": p1r},
             "temporal_roles": {
                 row["concept"]: row["temporal_role"] for row in policy["concepts"]
+            },
+            "donor_labor_state": {
+                "artifact": donor_labor_path.name,
+                "value_field": policy["donor_labor_handoff"]["value_field"],
+                "vintage_field": policy["donor_labor_handoff"]["vintage_field"],
+                "semantic_status_field": policy["donor_labor_handoff"][
+                    "semantic_status_field"
+                ],
+                "clock": "census_vintage",
+                "legacy_common_plane_field": "CONDACT",
+                "legacy_field_is_not_current_target_truth": True,
+                "eph_training_analogue_materialized_here": False,
             },
             "semantic_alignment_only": True,
             "statistical_transport_authorized": False,

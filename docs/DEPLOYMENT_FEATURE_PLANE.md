@@ -38,6 +38,30 @@ A future real-vintage audit should record, for every candidate feature:
 - geography dependence, if any;
 - reviewer/evidence status.
 
+## Source-clock role for donor labor state
+
+Labor-state category semantics and observation time are separate contracts.
+
+For the real Census donor, the materialized semantic plane exposes an additional
+Census-only handoff with:
+
+- `donor_condact`: reviewed canonical activity state;
+- `donor_condact_vintage`: the Census donor vintage from the review policy;
+- `donor_condact_semantic_status`: whether the canonical value is observed in
+  the reviewed universe or is missing/outside that universe.
+
+This handoff is not a `shared_observable` in the ordinary same-clock sense.
+The EPH-side current `ESTADO` observation remains tied to the EPH period, while
+the Census-side donor value remains tied to the donor Census vintage.
+
+The aligner must never create an EPH `donor_condact` by copying current
+`ESTADO`/CONDACT. A stale-state training analogue requires repeated-wave EPH
+evidence and belongs to the downstream transport study.
+
+The legacy P1-R `CONDACT` column is retained for v1 compatibility, but its
+Census value must not be interpreted as current target-period labor truth.
+Consumers studying donor persistence should use the explicit donor handoff.
+
 ## Deployment invariant
 
 A promoted Census-deployable model must be a pure function of an approved canonical feature frame made only from `shared_observable` and `derived_shared` inputs. `stage_target` variables may be internal learned outputs, not required external Census columns.

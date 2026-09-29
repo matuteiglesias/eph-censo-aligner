@@ -35,3 +35,5 @@ def test_activity_status_records_universe_mismatch() -> None:
     assert record["census"]["field"] == "CONDACT"
     assert "14+" in record["census"]["universe"]
     assert "temporal" in record["known_semantic_risk"]
+    assert record["clock_evidence"]["eph"] == "policy.clocks.eph_period"
+    assert record["clock_evidence"]["census"] == "policy.clocks.census_vintage"

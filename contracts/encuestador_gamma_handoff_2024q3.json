@@ -1,7 +1,7 @@
 {
   "schema": "research.encuestador-semantic-plane-handoff/v1",
   "status": "awaiting_local_materialization",
-  "semantic_plane_release_id": "eph-cpv2010-semantic-plane-2024q3-v1",
+  "semantic_plane_release_id": "eph-cpv2010-semantic-plane-2024q3-v2",
   "parents": {
     "eph_release_id": "eph-2024-q3-3b6a7a15c4af",
     "census_frame_release_id": "arg-cpv2010-frame-ee6ada167c2d6429",
@@ -11,8 +11,22 @@
     "manifest": "feature_plane_manifest.json",
     "eph_features": "eph_p1.parquet",
     "census_features": "census_p1.parquet",
+    "donor_labor_state": "census_donor_labor_state.parquet",
+    "donor_labor_qa": "donor_labor_qa.json",
     "support": "support_report.json",
     "review": "semantic_review_matrix.json"
+  },
+  "donor_labor_handoff": {
+    "source_side": "census",
+    "source_field": "CONDACT",
+    "value_field": "donor_condact",
+    "vintage_field": "donor_condact_vintage",
+    "semantic_status_field": "donor_condact_semantic_status",
+    "donor_vintage": 2010,
+    "observation_clock": "census_vintage",
+    "target_period_current_state_claimed": false,
+    "eph_training_analogue": "must_be_built_downstream_from_repeated_wave_eph_evidence",
+    "forbidden_shortcut": "do_not_copy_current_eph_estado_or_condact_into_donor_condact"
   },
   "canonical_identity": {
     "person": "row_id",

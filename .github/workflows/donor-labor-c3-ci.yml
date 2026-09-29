@@ -1,0 +1,69 @@
+name: Donor labor C3 CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/donor-labor-c3-ci.yml
+      - .github/workflows/scheduled-semantic-maturity.yml
+      - aligner/codebooks/real_2024q3_cpv2010_23.json
+      - aligner/codebooks/real_2024q3_cpv2010_person_codes.json
+      - aligner/codebooks/real_2024q3_cpv2010_review_policy.json
+      - aligner/real_semantic_plane.py
+      - contracts/encuestador_gamma_handoff_2024q3.json
+      - docs/DEPLOYMENT_FEATURE_PLANE.md
+      - docs/DONOR_LABOR_STATE_HANDOFF.md
+      - docs/MAPPING_REVIEW_REQUIRED.md
+      - tests/test_codebook.py
+      - tests/test_real_semantic_plane.py
+      - README.md
+      - SYSTEM.yaml
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/donor-labor-c3-ci.yml
+      - aligner/codebooks/real_2024q3_cpv2010_review_policy.json
+      - aligner/real_semantic_plane.py
+      - tests/test_real_semantic_plane.py
+
+permissions:
+  contents: read
+
+jobs:
+  c3-semantic-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: .
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package and test tools
+        run: python -m pip install -e .[test] ruff
+
+      - name: Lint C3 boundary
+        run: >-
+          ruff check
+          aligner/codebook.py
+          aligner/real_semantic_plane.py
+          tests/test_codebook.py
+          tests/test_real_semantic_plane.py
+
+      - name: Run repository check
+        run: make check
+
+      - name: Run full test suite
+        run: make test
+
+      - name: Run smoke surface
+        run: make smoke
+
+      - name: Run release fixture
+        run: make release-fixture OUT="$RUNNER_TEMP/c3-release-fixture"

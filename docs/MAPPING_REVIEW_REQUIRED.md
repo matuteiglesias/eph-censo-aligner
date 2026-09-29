@@ -28,6 +28,27 @@ A future CPV-2022 review must not fork the implementation. It supplies a new exa
 
 Changing donor vintage does **not** automatically preserve a prior semantic decision or temporal role. It triggers source-backed review, while downstream statistical transport remains outside this repository.
 
+### Donor labor-state clock is now explicit
+
+For the CPV-2010 real policy, `ESTADO↔CONDACT` remains an approved category
+mapping on the reviewed age-14+ common universe, but the two sides do not share
+an observation clock:
+
+- EPH `ESTADO` is observed at the policy's EPH quarter;
+- Census `CONDACT` is observed at `census_vintage=2010`.
+
+The materialized Census handoff therefore uses `donor_condact`,
+`donor_condact_vintage` and `donor_condact_semantic_status`, keyed by exact
+sample/frame identities. The donor QA records raw/canonical value inventories,
+special-to-null handling, age-universe counts, missingness and identity
+preservation.
+
+This is a semantic/source handoff only. It neither asserts persistence to a
+later target period nor creates a training proxy. In particular, copying current
+EPH `ESTADO` into an EPH column named donor state is forbidden; the downstream
+longitudinal study must construct stale-state analogues from repeated-wave EPH
+evidence.
+
 ### Semantic compatibility versus statistical support
 
 The real semantic compiler now treats these as different evidence classes:

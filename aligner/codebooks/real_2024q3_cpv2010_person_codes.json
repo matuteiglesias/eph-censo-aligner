@@ -5,7 +5,7 @@
   "concepts":{
     "P02":{"eph":{"field":"CH04","codes":{"1":"male","2":"female"}},"census":{"field":"P02","codes":{"1":"male","2":"female"}}},
     "P03":{"eph":{"field":"CH06","type":"age_completed_years"},"census":{"field":"P03","type":"age_completed_years"}},
-    "CONDACT":{"eph":{"field":"ESTADO","codes":{"0":"individual_nonresponse","1":"employed","2":"unemployed","3":"inactive","4":"under_10"}},"census":{"field":"CONDACT","universe":"age_14_plus","codes":{"1":"employed","2":"unemployed","3":"inactive"}}},
+    "CONDACT":{"eph":{"field":"ESTADO","codes":{"0":"individual_nonresponse","1":"employed","2":"unemployed","3":"inactive","4":"under_10"},"observation_clock":"policy.clocks.eph_period"},"census":{"field":"CONDACT","universe":"age_14_plus","codes":{"1":"employed","2":"unemployed","3":"inactive"},"observation_clock":"policy.clocks.census_vintage","semantic_role":"observed_donor_vintage_labor_state"}},
     "P07":{"eph":{"field":"CH09","codes":{"1":"yes","2":"no","3":"under_2"}},"census":{"field":"P07","universe":"age_3_plus","codes":{"1":"yes","2":"no"}}},
     "P08":{"eph":{"field":"CH10","codes":{"1":"attends","2":"attended","3":"never"}},"census":{"field":"P08","universe":"age_3_plus","codes":{"1":"attends","2":"attended","3":"never"}}},
     "P09":{"eph":{"field":"CH12","codes":{"1":"initial","2":"primary","3":"egb","4":"secondary","5":"polimodal","6":"tertiary","7":"university","8":"postgraduate","9":"special_education"}},"census":{"field":"P09","codes":{"1":"initial","2":"primary","3":"egb","4":"secondary","5":"polimodal","6":"higher_nonuniversity","7":"university","8":"postuniversity","9":"special_education"}}},

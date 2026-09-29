@@ -82,6 +82,36 @@ semantic-plane materialize-real \
 
 Ver `docs/MAPPING_REVIEW_REQUIRED.md`.
 
+## Estado laboral del donante: reloj explícito
+
+La política real CPV-2010 ahora publica un handoff Census-only separado:
+
+```text
+census_donor_labor_state.parquet
+  row_id / household_id
+  sample_person_id / sample_household_id
+  frame_person_id / frame_household_id / frame_dwelling_id
+  donor_condact
+  donor_condact_vintage
+  donor_condact_semantic_status
+```
+
+Para CPV-2010, `donor_condact_vintage=2010`. El valor proviene del `CONDACT`
+censal revisado y recodificado bajo la misma política semántica; no se relabela
+como estado laboral corriente del período EPH o del período de bienestar.
+
+El `CONDACT` del plano P1-R se conserva por compatibilidad del contrato v1,
+pero el manifest marca explícitamente que su lado Census es una observación de
+vintage donante. Un consumidor que estudie persistencia temporal debe usar el
+handoff `donor_condact*` y construir su análogo de entrenamiento fuera de este
+repositorio con evidencia EPH repetida. Este repositorio no crea
+`donor_condact` en EPH copiando `ESTADO`/CONDACT corriente.
+
+`donor_labor_qa.json` registra soporte bruto/canónico, categorías especiales a
+null, universo de edad, faltantes, preservación exacta de identidad y separación
+de relojes. La misma representación acepta un futuro CPV-2022 mediante otra
+review policy source-backed; no requiere una rama de compilador específica.
+
 ## Integración por artefacto
 
 Un consumidor usa una copia inmutable de una release cuando necesita alineación semántica; no necesita ejecutar este repositorio ni leer un checkout hermano. Puede validar el artefacto antes del preprocessing:
