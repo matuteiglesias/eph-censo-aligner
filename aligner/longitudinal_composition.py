@@ -433,14 +433,16 @@ def materialize_longitudinal_profile(
         payload = ["composition_plane.csv", "support_inventory.csv", "profile.json", "profile_registry.json", "semantic_policy.json", "longitudinal_specials_v1.json", "parent_manifest.json", "qa.json"]
         manifest = {
             "schema": "research-artifact-manifest/v1", "contract": CONTRACT, "release_id": release_id,
+            "row_id_field": "row_id",
             "status": "real_longitudinal_composition_materialized",
             "parent": {"contract": C2_CONTRACT, "release_id": parent["release_id"], **parent_hashes},
             "semantic_policy": {"semantic_policy_id": policy_id, "sha256": policy_sha, "exact_review_scope": "EPH-2024-Q3 + CPV-2010", "recode_definitions_reused": True, "longitudinal_2017_2026_approval_claimed": True},
             "longitudinal_special_policy": {"path": "longitudinal_specials_v1.json", "sha256": special_policy_sha, "rules": special_policy["rules"]},
             "profile": {"profile_id": profile_id, "feature_ids": features, "registry_sha256": registry_sha, "census_compatible": summary["census_compatible"], "census_blocker": summary["census_blocker"]},
+            "profiles": {profile_id: {"features": features, "categorical_features": [f for f in features if f not in {"IX_TOT", "P03", "H15"}], "artifact": "composition_plane.csv"}},
             "identity": {"grain": "one row per exact C2 row_id", "identity_columns": IDENTITY_COLUMNS, "identity_sequence_sha256": input_sha, "identity_sequence_preserved_exactly": True},
             "coverage": {"period_start": EXPECTED_PERIOD_START, "period_end": EXPECTED_PERIOD_END, "period_count": EXPECTED_PERIOD_COUNT, "profile_complete_on_fixture": True, "real_longitudinal_support_approval": "pass_L3B"},
-            "artifacts": _inventory(staging, payload), "qa": qa,
+            "artifacts": {**_inventory(staging, payload), "composition_plane.csv": {**_inventory(staging, ["composition_plane.csv"])["composition_plane.csv"], "rows": total}}, "qa": qa,
             "limitations": [
                 "Historical survey-special codes are governed by longitudinal_specials_v1 and become canonical nulls without dropping rows.",
                 "Temporal admissibility for welfare transport remains a downstream consumer decision.",
