@@ -229,7 +229,10 @@ def _sort_support(values: set[str]) -> list[str]:
 
 def _support(profile: str, features: list[str], states: dict[tuple[str, str], dict[str, Any]]) -> list[dict[str, str]]:
     out = []
-    cell = lambda value: json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    def cell(value: object) -> str:
+        return json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
     for period in expected_periods():
         for feature_id in features:
             state, entry = states[(period, feature_id)], states[(period, feature_id)]["entry"]
