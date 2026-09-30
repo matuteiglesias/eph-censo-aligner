@@ -1,6 +1,6 @@
 # C5 — longitudinal canonical composition plane
 
-Status: cloud implementation plan with local real-data gate, 2026-09-29.
+Status: implemented and merged via PR #25 on 2026-09-30. Real 37-quarter approval remains the local L3B gate.
 
 ## Motivation
 
