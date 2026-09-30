@@ -82,6 +82,39 @@ semantic-plane materialize-real \
 
 Ver `docs/MAPPING_REVIEW_REQUIRED.md`.
 
+## Plano longitudinal canónico de composición (C5)
+
+El contrato `research.eph-longitudinal-composition-plane/v1` consume una release C2 exacta
+(`research.eph-longitudinal-analysis-frame/v1`) y preserva su identidad de fila sin
+reconstruir paneles ni recodificar dentro de `encuestador-de-hogares`.
+
+Los perfiles versionados son:
+
+- `P0_LONG`: baseline histórico mínimo; reutiliza conceptos canónicos aprobados donde
+  existen y conserva `CH07` como concepto EPH-only gobernado. No se inventa un análogo
+  Census para CH07.
+- `P1R_NOLAB_LONG`: la superficie P1-R aprobada menos `CONDACT`; `H06`, `H11` y
+  `H16` permanecen excluidos por estar `needs-judgment`.
+
+El compilador reutiliza las transformaciones del policy exacto EPH-2024-Q3/CPV-2010,
+pero no convierte esa revisión exacta en aprobación histórica. Emite inventarios
+`period × concept`, falla ante códigos desconocidos o soporte de fuente ausente, y marca
+la aprobación longitudinal como pendiente de L3B.
+
+```bash
+semantic-plane profiles
+semantic-plane materialize-longitudinal \
+  --c2-release-root /path/to/c2-release \
+  --profile P1R_NOLAB_LONG \
+  --output-root /path/to/c5-releases
+```
+
+El mismo registro puede proyectar `P1R_NOLAB_LONG` sobre columnas Census ya compiladas
+por el semantic compiler CPV-2010; ese hook selecciona features, no vuelve a recodificar.
+`P0_LONG` falla cerrado del lado Census mientras CH07 no tenga una decisión cross-survey.
+
+Ver `docs/LONGITUDINAL_COMPOSITION_PLANE.md` y el handoff local L3B.
+
 ## Estado laboral del donante: reloj explícito
 
 La política real CPV-2010 ahora publica un handoff Census-only separado:

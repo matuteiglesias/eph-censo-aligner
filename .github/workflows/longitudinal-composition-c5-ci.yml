@@ -1,0 +1,66 @@
+name: Longitudinal composition C5 CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/longitudinal-composition-c5-ci.yml
+      - aligner/codebooks/longitudinal_composition_profiles_v1.json
+      - aligner/composition_profiles.py
+      - aligner/census_profile_hook.py
+      - aligner/longitudinal_composition.py
+      - aligner/real_semantic_cli.py
+      - aligner/real_semantic_plane.py
+      - tests/test_longitudinal_composition.py
+      - docs/LONGITUDINAL_COMPOSITION_PLANE.md
+      - README.md
+      - SYSTEM.yaml
+      - Makefile
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/longitudinal-composition-c5-ci.yml
+      - aligner/codebooks/longitudinal_composition_profiles_v1.json
+      - aligner/composition_profiles.py
+      - aligner/census_profile_hook.py
+      - aligner/longitudinal_composition.py
+      - aligner/real_semantic_cli.py
+      - tests/test_longitudinal_composition.py
+
+permissions:
+  contents: read
+
+jobs:
+  c5-fixture-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: .
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package and bounded test tools
+        run: python -m pip install -e .[test] ruff
+      - name: Lint C5 boundary
+        run: >-
+          ruff check
+          aligner/composition_profiles.py
+          aligner/census_profile_hook.py
+          aligner/longitudinal_composition.py
+          aligner/real_semantic_cli.py
+          tests/test_longitudinal_composition.py
+      - name: Verify repository compile and command surface
+        run: |
+          make check
+          semantic-plane --help >/tmp/semantic-plane-help.txt
+          semantic-plane profiles >/tmp/c5-profiles.json
+      - name: Run C5 fixture tests
+        run: pytest -q tests/test_longitudinal_composition.py
+      - name: Run full repository tests
+        run: make test

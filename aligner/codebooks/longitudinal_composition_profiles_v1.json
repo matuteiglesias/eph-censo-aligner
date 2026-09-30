@@ -1,0 +1,51 @@
+{
+  "schema": "research.eph-longitudinal-composition-profile-registry/v1",
+  "status": "fixture-ready-longitudinal-semantic-profile-registry",
+  "semantic_policy_basis": {
+    "policy": "real_2024q3_cpv2010_review_policy.json",
+    "interpretation": "Reuse approved recode definitions only. The 2024-Q3 exact-pair approval is not longitudinal approval for 2017-Q1..2026-Q1."
+  },
+  "profiles": {
+    "P0_LONG": {
+      "description": "Historical minimal direct baseline expressed canonically where an approved concept exists; CH07 remains explicitly EPH-only.",
+      "features": [
+        {"feature_id": "P02", "semantic_concept": "P02", "eph_source_alias": "CH04"},
+        {"feature_id": "P03", "semantic_concept": "P03", "eph_source_alias": "CH06"},
+        {"feature_id": "CH07", "semantic_concept": null, "eph_source_alias": "CH07", "eph_source_only": true, "allowed_raw_codes": [1, 2, 3, 4, 5], "temporal_role": "target-period-source-state", "review_status": "source-domain-governed-not-cross-survey-approved", "domain_evidence": "aligner/mappings/eph/values.yaml#INDIVIDUAL.CH07"},
+        {"feature_id": "P07", "semantic_concept": "P07", "eph_source_alias": "CH09"},
+        {"feature_id": "P08", "semantic_concept": "P08", "eph_source_alias": "CH10"},
+        {"feature_id": "P09", "semantic_concept": "P09", "eph_source_alias": "CH12"},
+        {"feature_id": "P10", "semantic_concept": "P10", "eph_source_alias": "CH13"},
+        {"feature_id": "P05", "semantic_concept": "P05", "eph_source_alias": "CH15"},
+        {"feature_id": "IX_TOT", "semantic_concept": "IX_TOT", "eph_source_alias": "IX_TOT"}
+      ]
+    },
+    "P1R_NOLAB_LONG": {
+      "description": "Approved P1-R canonical research composition surface with current individual labor state deliberately excluded.",
+      "features": [
+        {"feature_id": "IX_TOT", "semantic_concept": "IX_TOT", "eph_source_alias": "IX_TOT"},
+        {"feature_id": "P02", "semantic_concept": "P02", "eph_source_alias": "CH04"},
+        {"feature_id": "P03", "semantic_concept": "P03", "eph_source_alias": "CH06"},
+        {"feature_id": "P05", "semantic_concept": "P05", "eph_source_alias": "CH15"},
+        {"feature_id": "P07", "semantic_concept": "P07", "eph_source_alias": "CH09"},
+        {"feature_id": "P08", "semantic_concept": "P08", "eph_source_alias": "CH10"},
+        {"feature_id": "P09", "semantic_concept": "P09", "eph_source_alias": "CH12"},
+        {"feature_id": "P10", "semantic_concept": "P10", "eph_source_alias": "CH13"},
+        {"feature_id": "V01", "semantic_concept": "V01", "eph_source_alias": "IV1"},
+        {"feature_id": "H05", "semantic_concept": "H05", "eph_source_alias": "IV3"},
+        {"feature_id": "H07", "semantic_concept": "H07", "eph_source_alias": "IV5"},
+        {"feature_id": "H08", "semantic_concept": "H08", "eph_source_alias": "IV6"},
+        {"feature_id": "H09", "semantic_concept": "H09", "eph_source_alias": "IV7"},
+        {"feature_id": "H10", "semantic_concept": "H10", "eph_source_alias": "IV8"},
+        {"feature_id": "H12", "semantic_concept": "H12", "eph_source_alias": "IV11"},
+        {"feature_id": "H13", "semantic_concept": "H13", "eph_source_alias": "II9"},
+        {"feature_id": "H14", "semantic_concept": "H14", "eph_source_alias": "II8"},
+        {"feature_id": "H15", "semantic_concept": "H15", "eph_source_alias": "II2"},
+        {"feature_id": "PROP", "semantic_concept": "PROP", "eph_source_alias": "II7"}
+      ],
+      "policy_basis": "P1-R",
+      "excluded_by_design": ["CONDACT"],
+      "excluded_unresolved": ["H06", "H11", "H16"]
+    }
+  }
+}
