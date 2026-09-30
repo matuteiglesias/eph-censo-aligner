@@ -9,7 +9,9 @@ check:
 	$(PYTHON) -m compileall -q aligner
 	$(PYTHON) -m json.tool aligner/mappings/registry.json >/dev/null
 	$(PYTHON) -m json.tool aligner/compatibility.json >/dev/null
+	$(PYTHON) -m json.tool aligner/codebooks/longitudinal_composition_profiles_v1.json >/dev/null
 	$(PYTHON) -m aligner.cli --help >/dev/null
+	$(PYTHON) -m aligner.real_semantic_cli --help >/dev/null
 test:
 	$(PYTHON) -m pytest -q
 smoke:
