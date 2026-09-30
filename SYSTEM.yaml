@@ -79,8 +79,8 @@ scientific_invariants:
 - P1R_NOLAB_LONG excludes current individual CONDACT by design; H06, H11 and H16 remain unresolved
 - downstream consumers select versioned named profiles rather than reimplementing semantic recodes
 verification:
-  status: fixture-plus-source-backed-cpv2010-policy
-  last_verified: '2026-09-29'
+  status: real-cpv2010-donor-and-37q-longitudinal-composition-materialized
+  last_verified: '2026-09-30'
   command: make check && make test && make smoke && make release-fixture
   supported_vintages:
   - fixture-v1
@@ -90,12 +90,14 @@ verification:
   - exact CPV-2010 real review policy pins parents, clocks and codebook evidence
   - explicit donor-labor handoff preserves Census donor vintage, sample/frame identity and missing/universe QA
   - reusable real compiler is donor-vintage-neutral and accepts policy-selected CPV-2010/CPV-2022 evidence
-  - C5 fixture compiler preserves C2 identity, emits period-by-concept support ledgers and fails on unknown codes
+  - C5 compiler preserves C2 identity, emits period-by-concept support ledgers and fails on unknown substantive codes
+  - L3A real CPV-2010 donor-labor handoff is materialized as eph-cpv2010-semantic-plane-2024q3-v2 with donor vintage 2010 and 469,172 rows
+  - L3B real P0_LONG and P1R_NOLAB_LONG releases each preserve all 1,869,620 C2 rows across 37 quarters with zero unresolved unexpected/impossible code cells
+  - governed longitudinal_specials_v1 converts only reviewed historical survey-special states to feature-level canonical nulls while retaining exact C2 row identity
   unknowns:
   - CPV-2022 requires its own source-backed semantic review policy before use
   - semantic approval does not establish target-period transport validity
   - support/domain-shift qualification remains downstream in repo.encuestador-de-hogares
-  - real 37-period C5 concept support and profile completeness require the L3B local gate
 maintenance:
   cadence: active-development
   next_review: '2026-11-01'
