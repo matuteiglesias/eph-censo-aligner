@@ -1,6 +1,6 @@
 # L3 — real semantic materialization gates
 
-Status: local-data execution packet, 2026-09-29.
+Status: L3A/L3B executed and complete, 2026-09-30. L3A materialized `eph-cpv2010-semantic-plane-2024q3-v2`; L3B materialized real `P0_LONG` and `P1R_NOLAB_LONG` releases across all 37 quarters with exact C2 row preservation and zero unresolved unexpected/impossible code cells. The optional bounded CPV-2010 profile/scoring proof remains downstream Gate-E work.
 
 This local packet has two independent sub-gates.
 
