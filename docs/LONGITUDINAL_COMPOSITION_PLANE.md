@@ -1,6 +1,6 @@
 # C5 implemented contract — longitudinal canonical composition plane
 
-Status: fixture-backed cloud implementation; real longitudinal approval requires L3B.
+Status: real longitudinal L3B materialized and approved for bounded downstream commissioning, 2026-09-30.
 
 ## Contract and boundary
 
@@ -96,8 +96,10 @@ The exact 2024-Q3 + CPV-2010 policy is used in two distinct ways:
 2. the exact-pair semantic approval itself is **not** promoted to historical
    longitudinal approval.
 
-The release manifest records both facts. Every C5 row is marked
-`reusable_recode_compiled_longitudinal_approval_pending_l3b`.
+The release manifest records both facts. Fixture/compiler-only releases retain
+`reusable_recode_compiled_longitudinal_approval_pending_l3b`; the real L3B
+materializations bind the governed historical-special policy and carry explicit
+longitudinal approval for their exact 37-quarter parent.
 
 ## Period × concept support inventory
 
@@ -116,7 +118,7 @@ Each row records:
 - exact-pair semantic decision and temporal role;
 - longitudinal review status;
 - cross-survey approval status;
-- `longitudinal_approved=false` until L3B.
+- `longitudinal_approved` reflecting the exact release's L3B adjudication state.
 
 A raw field absent from a period's C2 source schema fails before materialization.
 An unexpected code or impossible transformed value fails immediately. A unioned
@@ -174,24 +176,22 @@ semantic-plane materialize-longitudinal \
 
 Run `P0_LONG` separately when the historical baseline is needed.
 
-## L3B local handoff
+## Real L3B completion
 
-C5 cloud verification establishes compiler mechanics only. After the real L2
-C2 release exists, L3B must materialize **both** profiles over all 37 periods
-(2017-Q1..2026-Q1) and inspect the emitted support inventory.
+The source-backed real-data gate has now been executed against:
 
-L3B must fail a concept/profile for an affected period whenever observed source
-support cannot be reconciled to source documentation. It must specifically
-persist:
+`eph-longitudinal-2017q1-2026q1-c155bb8f847a2f39`
 
-- exact C2 parent release ID and manifest/person hashes;
-- C5 release IDs and manifest hashes for both profiles;
-- 37-period row counts and exact identity-sequence proof;
-- every period×concept raw/canonical support;
-- all special/null handling and any historical schema/category transition;
-- explicit unresolved issues;
-- confirmation that `P1R_NOLAB_LONG` exists on every intended L10 model row;
-- the exact profile/release identity handed to `encuestador-de-hogares`.
+Real profile releases:
 
-Only that source-backed real-data gate may mark longitudinal concept support as
-approved. CPV-2010 donor labor remains the separate C3/L3A handoff.
+- `P0_LONG` → `eph-longitudinal-composition-p0_long-7b8fdc0ec1f2a553`;
+- `P1R_NOLAB_LONG` → `eph-longitudinal-composition-p1r_nolab_long-ed30aa112c9b7d31`.
+
+Both preserve all 1,869,620 C2 rows over 37 periods. Historical survey-special
+states reviewed in `longitudinal_specials_v1.json` become feature-level
+canonical nulls without dropping rows; unknown or substantive semantic drift
+continues to fail closed. The final releases have zero unresolved unexpected or
+impossible code cells.
+
+CPV-2010 donor labor remains the separate C3/L3A handoff. Statistical transport
+and target-period admissibility remain downstream responsibilities.
