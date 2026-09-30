@@ -19,7 +19,12 @@ from .composition_profiles import (
     profile_summary,
     validated_profile_features,
 )
-from .real_semantic_plane import POLICY_PATH, _norm_code, _transform_series, load_review_policy
+from .real_semantic_plane import (
+    POLICY_PATH,
+    _norm_code,
+    _transform_series,
+    load_review_policy,
+)
 
 CONTRACT = "research.eph-longitudinal-composition-plane/v1"
 C2_CONTRACT = "research.eph-longitudinal-analysis-frame/v1"
@@ -412,4 +417,4 @@ def materialize_longitudinal_profile(
         raise
 
 
-__all__ = ["CONTRACT", "C2_CONTRACT", "LongitudinalCompositionError", "expected_periods", "materialize_longitudinal_profile"]
+__all__ = ["C2_CONTRACT", "CONTRACT", "LongitudinalCompositionError", "expected_periods", "materialize_longitudinal_profile"]
