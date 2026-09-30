@@ -53,6 +53,12 @@ Required audit:
 
 Any historical concept drift that lacks source-backed adjudication blocks that concept/profile for the affected period; do not guess.
 
+The longitudinal compiler uses the governed `longitudinal_specials_v1.json`
+policy for recognized historical survey-special codes. These values become a
+canonical null for that feature only; the underlying C2 person row is retained.
+The policy is hashed into each immutable release. Unknown codes and substantive
+semantic drift continue to fail closed.
+
 ## Optional bounded CPV-2010 profile proof
 
 After L3A/L3B, materialize one bounded CPV-2010 scoring plane selecting the same named profile intended for L10 Gate E.

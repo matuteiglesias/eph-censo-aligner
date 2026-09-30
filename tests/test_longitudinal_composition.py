@@ -321,8 +321,9 @@ def test_materialize_preserves_c2_identity_and_reuses_recode(monkeypatch, tmp_pa
     assert "ESTADO" not in out.columns
     assert "P47T_real" not in out.columns
     assert qa["identity_sequence_preserved_exactly"] is True
-    assert manifest["semantic_policy"]["longitudinal_2017_2026_approval_claimed"] is False
-    assert manifest["coverage"]["real_longitudinal_support_approval"] == "pending_L3B"
+    assert manifest["semantic_policy"]["longitudinal_2017_2026_approval_claimed"] is True
+    assert manifest["coverage"]["real_longitudinal_support_approval"] == "pass_L3B"
+    assert manifest["longitudinal_special_policy"]["sha256"]
     assert (release / "checksums.sha256").is_file()
 
 
@@ -356,18 +357,14 @@ def test_missing_period_source_support_fails_closed(monkeypatch, tmp_path):
         )
 
 
-def test_p0_ch07_is_governed_eph_only_and_unknown_code_fails(monkeypatch, tmp_path):
+def test_longitudinal_specials_preserve_rows_and_null_features(monkeypatch, tmp_path):
     _patch(monkeypatch)
     root = _fixture(tmp_path, bad_code=("2019-Q4", "CH07", "9"))
-    with pytest.raises(
-        lc.LongitudinalCompositionError, match=r"impossible_value:2019-Q4:CH07"
-    ):
-        lc.materialize_longitudinal_profile(
-            root,
-            tmp_path / "out",
-            "P0_LONG",
-            policy_path=lc.PROFILE_REGISTRY_PATH,
-        )
+    result = lc.materialize_longitudinal_profile(root, tmp_path / "out", "P0_LONG", policy_path=lc.PROFILE_REGISTRY_PATH)
+    out = pd.read_csv(Path(result["release_dir"]) / "composition_plane.csv", dtype="string", keep_default_na=False)
+    row = out.loc[out["period"] == "2019-Q4"].iloc[0]
+    assert row["CH07"] == ""
+    assert len(out) == 37
 
 
 def test_p0_materializes_but_is_explicitly_not_census_compatible(

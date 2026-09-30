@@ -1,0 +1,51 @@
+{
+  "schema": "research.eph-longitudinal-special-code-policy/v1",
+  "status": "governed_historical_specials",
+  "rules": {
+    "CH07": {
+      "special_to_null": ["9"],
+      "classification": "A",
+      "rationale": "historical EPH non-substantive/special relationship-state code; preserve row and null only this feature"
+    },
+    "CH15": {
+      "special_to_null": ["0"],
+      "classification": "A",
+      "rationale": "historical EPH non-substantive/special household relationship code; preserve row and null only this feature"
+    },
+    "IV1": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV3": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV5": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV6": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV7": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV8": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household dwelling special/non-substantive codes"
+    },
+    "IV11": {
+      "special_to_null": ["0", "9"],
+      "classification": "A",
+      "rationale": "historical household sanitation special/non-substantive codes"
+    }
+  }
+}

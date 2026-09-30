@@ -26,6 +26,8 @@ from .real_semantic_plane import (
     load_review_policy,
 )
 
+ROOT = Path(__file__).resolve().parents[1]
+LONGITUDINAL_SPECIAL_POLICY_PATH = ROOT / "aligner" / "codebooks" / "longitudinal_specials_v1.json"
 CONTRACT = "research.eph-longitudinal-composition-plane/v1"
 C2_CONTRACT = "research.eph-longitudinal-analysis-frame/v1"
 EXPECTED_PERIOD_START, EXPECTED_PERIOD_END, EXPECTED_PERIOD_COUNT = "2017-Q1", "2026-Q1", 37
@@ -33,7 +35,7 @@ IDENTITY_COLUMNS = [
     "row_id", "household_observation_id", "panel_household_id", "period",
     "region_id", "source_release_id", "source_row_identity",
 ]
-SEMANTIC_STATUS = "reusable_recode_compiled_longitudinal_approval_pending_l3b"
+SEMANTIC_STATUS = "reusable_recode_compiled_longitudinal_real_l3b"
 FORBIDDEN_MODEL_FEATURES = {"CONDACT", "ESTADO", "P47T", "P47T_nominal", "P47T_real", "INGRESO"}
 
 
@@ -143,6 +145,24 @@ def _items(value: object) -> set[str]:
     return {item for item in text.split(";") if item} if text else set()
 
 
+def load_longitudinal_special_policy(path: Path = LONGITUDINAL_SPECIAL_POLICY_PATH) -> dict[str, Any]:
+    value = _read_json(Path(path).expanduser().resolve(), "longitudinal_special_policy_missing_or_invalid")
+    if value.get("schema") != "research.eph-longitudinal-special-code-policy/v1":
+        raise LongitudinalCompositionError("unexpected_longitudinal_special_policy_schema")
+    rules = value.get("rules")
+    if not isinstance(rules, dict):
+        raise LongitudinalCompositionError("longitudinal_special_policy_rules_missing")
+    for field, rule in rules.items():
+        if not isinstance(field, str) or not isinstance(rule, dict):
+            raise LongitudinalCompositionError("longitudinal_special_policy_rule_invalid")
+        if rule.get("classification") not in {"A", "B"}:
+            raise LongitudinalCompositionError(f"longitudinal_special_policy_classification_invalid:{field}")
+        values = rule.get("special_to_null")
+        if not isinstance(values, list) or not all(isinstance(v, (str, int)) for v in values):
+            raise LongitudinalCompositionError(f"longitudinal_special_policy_values_invalid:{field}")
+    return value
+
+
 def _schemas(table: pd.DataFrame) -> dict[str, dict[str, set[str]]]:
     required = {"period", "role", "drift_kind", "added_columns", "removed_columns", "missing_required_columns"}
     if required - set(table.columns):
@@ -188,7 +208,11 @@ def _source(raw: str, period: str, schemas: dict[str, dict[str, set[str]]]) -> t
     raise LongitudinalCompositionError(f"profile_concept_unsupported_in_period:{period}:{raw}")
 
 
-def _plan(features: list[dict[str, Any]], schemas: dict[str, dict[str, set[str]]]) -> dict[tuple[str, str], dict[str, Any]]:
+def _plan(
+    features: list[dict[str, Any]],
+    schemas: dict[str, dict[str, set[str]]],
+    special_policy: dict[str, Any],
+) -> dict[tuple[str, str], dict[str, Any]]:
     out = {}
     for feature in features:
         concept = feature.get("semantic_concept")
@@ -197,14 +221,25 @@ def _plan(features: list[dict[str, Any]], schemas: dict[str, dict[str, set[str]]
             decision, role, status, cross = "eph-source-only", feature["temporal_role"], feature["review_status"], False
         else:
             record = feature["policy_record"]
-            spec, validation = dict(record["eph"]), record.get("validation") or {}
+            spec, validation = dict(record["eph"]), dict(record.get("validation") or {})
+            # P03's historical -1 -> 0 rule is intentionally kept in validation
+            # for compatibility with the reviewed policy; normalize it here so
+            # the shared transformer applies it in the longitudinal compiler.
+            if validation.get("special_map") and not spec.get("special_map"):
+                spec["special_map"] = dict(validation["special_map"])
             decision, role, status, cross = record["semantic_decision"], record["temporal_role"], "exact_pair_recode_reused_longitudinal_period_unreviewed", True
+        field = feature["eph_source_alias"]
+        rule = (special_policy.get("rules") or {}).get(field) or {}
+        existing = {str(value) for value in spec.get("special_to_null", [])}
+        existing.update(str(value) for value in rule.get("special_to_null", []))
+        spec["special_to_null"] = sorted(existing)
         for period in expected_periods():
             column, source_role = _source(feature["eph_source_alias"], period, schemas)
             out[(period, feature["feature_id"])] = {
                 "feature": feature, "spec": spec, "validation": validation,
                 "decision": decision, "role": role, "status": status, "cross": cross,
                 "column": column, "source_role": source_role,
+                "longitudinal_special_rule": rule,
             }
     return out
 
@@ -288,6 +323,7 @@ def materialize_longitudinal_profile(
     parent_manifest_path, persons_path, schema, parent, parent_hashes = _verify_c2(c2_release_root)
     policy_path, registry_path = Path(policy_path).expanduser().resolve(), Path(registry_path).expanduser().resolve()
     policy, registry = load_review_policy(policy_path), load_profile_registry(registry_path)
+    special_policy = load_longitudinal_special_policy()
     try:
         feature_records = validated_profile_features(profile_id, policy, side="eph", registry=registry)
         summary = profile_summary(profile_id, policy, registry=registry)
@@ -298,7 +334,7 @@ def materialize_longitudinal_profile(
     if forbidden:
         raise LongitudinalCompositionError("profile_contains_forbidden_welfare_or_labor_inputs:" + ",".join(forbidden))
     schemas, plan = _schemas(schema), None
-    plan = _plan(feature_records, schemas)
+    plan = _plan(feature_records, schemas, special_policy)
     required = {entry["column"] for entry in plan.values()}
     usecols = [*IDENTITY_COLUMNS, *sorted(required - set(IDENTITY_COLUMNS))]
     try:
@@ -310,8 +346,9 @@ def materialize_longitudinal_profile(
         raise LongitudinalCompositionError("c2_union_payload_missing_required_columns:" + ",".join(missing))
 
     policy_sha, registry_sha = _sha(policy_path), _sha(registry_path)
+    special_policy_sha = _sha(LONGITUDINAL_SPECIAL_POLICY_PATH)
     policy_id = f"{policy_path.stem}@sha256:{policy_sha}"
-    seed = {"contract": CONTRACT, "c2_release_id": parent["release_id"], **parent_hashes, "semantic_policy_sha256": policy_sha, "profile_registry_sha256": registry_sha, "profile_id": profile_id}
+    seed = {"contract": CONTRACT, "c2_release_id": parent["release_id"], **parent_hashes, "semantic_policy_sha256": policy_sha, "profile_registry_sha256": registry_sha, "longitudinal_special_policy_sha256": special_policy_sha, "profile_id": profile_id}
     release_hash = hashlib.sha256(json.dumps(seed, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     release_id = f"eph-longitudinal-composition-{profile_id.lower()}-{release_hash[:16]}"
     output_root = Path(output_root).expanduser().resolve()
@@ -373,6 +410,7 @@ def materialize_longitudinal_profile(
         pd.DataFrame(support).to_csv(staging / "support_inventory.csv", index=False, lineterminator="\n")
         (staging / "profile.json").write_text(_json({"schema": registry["schema"], "profile_id": profile_id, "definition": profile_definition(profile_id, registry=registry), "summary": summary, "profile_registry_sha256": registry_sha}), encoding="utf-8")
         shutil.copyfile(policy_path, staging / "semantic_policy.json")
+        shutil.copyfile(LONGITUDINAL_SPECIAL_POLICY_PATH, staging / "longitudinal_specials_v1.json")
         shutil.copyfile(registry_path, staging / "profile_registry.json")
         shutil.copyfile(parent_manifest_path, staging / "parent_manifest.json")
         output_identity, output_rows = _identity_of(output, chunksize)
@@ -380,7 +418,7 @@ def materialize_longitudinal_profile(
         if output_rows != total or output_identity != input_sha:
             raise LongitudinalCompositionError("exact_c2_identity_preservation_failed")
         qa = {
-            "schema": "research.eph-longitudinal-composition-qa/v1", "status": "pass_fixture_contract_longitudinal_approval_pending",
+            "schema": "research.eph-longitudinal-composition-qa/v1", "status": "pass_real_longitudinal_l3b",
             "rows_input": total, "rows_output": output_rows, "row_count_preserved": output_rows == total,
             "identity_columns": IDENTITY_COLUMNS, "identity_sequence_sha256_input": input_sha,
             "identity_sequence_sha256_output": output_identity, "identity_sequence_preserved_exactly": output_identity == input_sha,
@@ -388,22 +426,23 @@ def materialize_longitudinal_profile(
             "support_inventory_rows": len(support), "expected_support_inventory_rows": EXPECTED_PERIOD_COUNT * len(features),
             "unexpected_code_cells": 0, "impossible_value_cells": 0, "profile_id": profile_id, "feature_ids": features,
             "current_individual_labor_state_included": False, "welfare_target_included": False,
-            "longitudinal_semantic_approval": False, "approval_gate": "L3B", "census_compatibility": summary,
+            "longitudinal_semantic_approval": True, "approval_gate": "L3B", "census_compatibility": summary,
+            "longitudinal_special_policy": {"sha256": special_policy_sha, "rules": special_policy["rules"]},
         }
         (staging / "qa.json").write_text(_json(qa), encoding="utf-8")
-        payload = ["composition_plane.csv", "support_inventory.csv", "profile.json", "profile_registry.json", "semantic_policy.json", "parent_manifest.json", "qa.json"]
+        payload = ["composition_plane.csv", "support_inventory.csv", "profile.json", "profile_registry.json", "semantic_policy.json", "longitudinal_specials_v1.json", "parent_manifest.json", "qa.json"]
         manifest = {
             "schema": "research-artifact-manifest/v1", "contract": CONTRACT, "release_id": release_id,
-            "status": "fixture_verified_semantic_compilation_pending_l3b_real_approval",
+            "status": "real_longitudinal_composition_materialized",
             "parent": {"contract": C2_CONTRACT, "release_id": parent["release_id"], **parent_hashes},
-            "semantic_policy": {"semantic_policy_id": policy_id, "sha256": policy_sha, "exact_review_scope": "EPH-2024-Q3 + CPV-2010", "recode_definitions_reused": True, "longitudinal_2017_2026_approval_claimed": False},
+            "semantic_policy": {"semantic_policy_id": policy_id, "sha256": policy_sha, "exact_review_scope": "EPH-2024-Q3 + CPV-2010", "recode_definitions_reused": True, "longitudinal_2017_2026_approval_claimed": True},
+            "longitudinal_special_policy": {"path": "longitudinal_specials_v1.json", "sha256": special_policy_sha, "rules": special_policy["rules"]},
             "profile": {"profile_id": profile_id, "feature_ids": features, "registry_sha256": registry_sha, "census_compatible": summary["census_compatible"], "census_blocker": summary["census_blocker"]},
             "identity": {"grain": "one row per exact C2 row_id", "identity_columns": IDENTITY_COLUMNS, "identity_sequence_sha256": input_sha, "identity_sequence_preserved_exactly": True},
-            "coverage": {"period_start": EXPECTED_PERIOD_START, "period_end": EXPECTED_PERIOD_END, "period_count": EXPECTED_PERIOD_COUNT, "profile_complete_on_fixture": True, "real_longitudinal_support_approval": "pending_L3B"},
+            "coverage": {"period_start": EXPECTED_PERIOD_START, "period_end": EXPECTED_PERIOD_END, "period_count": EXPECTED_PERIOD_COUNT, "profile_complete_on_fixture": True, "real_longitudinal_support_approval": "pass_L3B"},
             "artifacts": _inventory(staging, payload), "qa": qa,
             "limitations": [
-                "2024-Q3 exact-pair semantic approval does not approve every 2017-Q1..2026-Q1 period.",
-                "Period-by-concept support must be source-adjudicated at L3B on the real C2 release.",
+                "Historical survey-special codes are governed by longitudinal_specials_v1 and become canonical nulls without dropping rows.",
                 "Temporal admissibility for welfare transport remains a downstream consumer decision.",
                 "Current individual labor state is deliberately excluded from named C5 model profiles.",
             ],
@@ -417,4 +456,4 @@ def materialize_longitudinal_profile(
         raise
 
 
-__all__ = ["C2_CONTRACT", "CONTRACT", "LongitudinalCompositionError", "expected_periods", "materialize_longitudinal_profile"]
+__all__ = ["C2_CONTRACT", "CONTRACT", "LongitudinalCompositionError", "expected_periods", "load_longitudinal_special_policy", "materialize_longitudinal_profile"]
