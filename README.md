@@ -2,7 +2,7 @@
 
 Alineador semántico bidireccional para expresar variables seleccionadas de la Encuesta Permanente de Hogares (EPH) y del Censo bajo contratos comunes y reglas de recodificación explícitas.
 
-> **Estado:** el contrato sintético v1 sigue disponible; además existe una revisión real acotada y source-backed para EPH 2024-Q3 ↔ CPV-2010. El compilador real es policy-driven y donor-vintage-neutral: CPV-2010 y CPV-2022 son instancias revisadas del mismo contrato, no pipelines separados. Una política CPV-2022 real todavía requiere su propia revisión semántica.
+> **Estado:** el contrato sintético v1 sigue disponible; la revisión real EPH 2024-Q3 ↔ CPV-2010 está materializada; el handoff donor-labor CPV-2010 está comisionado; y el plano longitudinal canónico EPH 2017-Q1..2026-Q1 ya fue materializado bajo perfiles gobernados. El compilador real sigue siendo policy-driven y donor-vintage-neutral. Una política CPV-2022 real todavía requiere su propia revisión semántica.
 
 ## Qué problema resuelve
 
@@ -96,10 +96,12 @@ Los perfiles versionados son:
 - `P1R_NOLAB_LONG`: la superficie P1-R aprobada menos `CONDACT`; `H06`, `H11` y
   `H16` permanecen excluidos por estar `needs-judgment`.
 
-El compilador reutiliza las transformaciones del policy exacto EPH-2024-Q3/CPV-2010,
-pero no convierte esa revisión exacta en aprobación histórica. Emite inventarios
-`period × concept`, falla ante códigos desconocidos o soporte de fuente ausente, y marca
-la aprobación longitudinal como pendiente de L3B.
+El compilador reutiliza las transformaciones del policy exacto EPH-2024-Q3/CPV-2010 y
+audita soporte `period × concept`. La gate real L3B ya fue ejecutada sobre los 37
+trimestres. Los códigos históricos reconocidos como estados especiales/no sustantivos
+se gobiernan en `aligner/codebooks/longitudinal_specials_v1.json` y se convierten en
+null **sólo para esa feature**, preservando la fila C2. Códigos desconocidos o drift
+semántico sustantivo continúan fallando cerrado.
 
 ```bash
 semantic-plane profiles
@@ -108,6 +110,13 @@ semantic-plane materialize-longitudinal \
   --profile P1R_NOLAB_LONG \
   --output-root /path/to/c5-releases
 ```
+
+Materializaciones reales actuales:
+
+- `P0_LONG`: `eph-longitudinal-composition-p0_long-7b8fdc0ec1f2a553`;
+- `P1R_NOLAB_LONG`: `eph-longitudinal-composition-p1r_nolab_long-ed30aa112c9b7d31`.
+
+Ambas preservan exactamente las 1,869,620 filas C2 en 37/37 períodos, excluyen estado laboral individual corriente y terminan con cero códigos inesperados/imposibles sin resolver.
 
 El mismo registro puede proyectar `P1R_NOLAB_LONG` sobre columnas Census ya compiladas
 por el semantic compiler CPV-2010; ese hook selecciona features, no vuelve a recodificar.
@@ -129,7 +138,7 @@ census_donor_labor_state.parquet
   donor_condact_semantic_status
 ```
 
-Para CPV-2010, `donor_condact_vintage=2010`. El valor proviene del `CONDACT`
+Para CPV-2010, `donor_condact_vintage=2010`. La materialización real L3A vigente es `eph-cpv2010-semantic-plane-2024q3-v2` con 469,172 personas, identidad preservada y ninguna autorización de transporte estadístico. El valor proviene del `CONDACT`
 censal revisado y recodificado bajo la misma política semántica; no se relabela
 como estado laboral corriente del período EPH o del período de bienestar.
 
