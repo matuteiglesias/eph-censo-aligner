@@ -1,0 +1,284 @@
+{
+  "candidates": [
+    {
+      "cpv2022_candidate_sources": [
+        "person_membership"
+      ],
+      "eph_2024q3_field": "IX_TOT",
+      "legacy_concept": "IX_TOT",
+      "legacy_cpv2010_field": "membership_count",
+      "qualification": "bounded_diagnostic_only",
+      "rationale": "membership count comes from complete selected household person membership; do not use unvalidated totals",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "P02"
+      ],
+      "eph_2024q3_field": "CH04",
+      "legacy_concept": "P02",
+      "legacy_cpv2010_field": "P02",
+      "qualification": "bounded_diagnostic_only",
+      "rationale": "INDEC CPV2022 P02 sex registered at birth: code 1 female, 2 male; EPH 2024 CH04 sex codes 1 male, 2 female. A mechanical value reversal is possible as an explicit binary proxy, but not a semantic equivalence of questionnaires. Only commissioning allowed.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "EDAD"
+      ],
+      "eph_2024q3_field": "CH06",
+      "legacy_concept": "P03",
+      "legacy_cpv2010_field": "P03",
+      "qualification": "bounded_diagnostic_only",
+      "rationale": "CPV2022 P03 is gender identity, not age. CPV2022 EDAD is age at 18 May 2022; EPH CH06 is age at quarter interview. 2022 age can be used for source diagnostics, not transported as 2024 age.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "P13"
+      ],
+      "eph_2024q3_field": "CH15",
+      "legacy_concept": "P05",
+      "legacy_cpv2010_field": "P05",
+      "qualification": "needs_scientific_review",
+      "rationale": "2022 location of birth P13 potentially supports a birthplace country-group recode, but classification/recode unreviewed.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [],
+      "eph_2024q3_field": "CH09",
+      "legacy_concept": "P07",
+      "legacy_cpv2010_field": "P07",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 literacy P07 is NOT 2022 P07, which records education level currently attended. No approved direct literacy equivalent.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "P06",
+        "P09"
+      ],
+      "eph_2024q3_field": "CH10",
+      "legacy_concept": "P08",
+      "legacy_cpv2010_field": "P08",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 attendance status P08 is NOT 2022 P08 (current grade/year). Potential composition of attends P06 and past attendance P09 is unreviewed.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "P07",
+        "P10"
+      ],
+      "eph_2024q3_field": "CH12",
+      "legacy_concept": "P09",
+      "legacy_cpv2010_field": "P09",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 highest education level P09 is NOT 2022 P09 (past attendance). 2022 current P07 and previous P10 need conditional harmonization.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "P11"
+      ],
+      "eph_2024q3_field": "CH13",
+      "legacy_concept": "P10",
+      "legacy_cpv2010_field": "P10",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 completion indicator P10 is NOT 2022 P10 (highest level previously attended). Candidate 2022 P11 needs universe recode.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "CONDACT"
+      ],
+      "eph_2024q3_field": "ESTADO",
+      "legacy_concept": "CONDACT",
+      "legacy_cpv2010_field": "CONDACT",
+      "qualification": "needs_scientific_review",
+      "rationale": "2022 CONDACT codes 1 employed, 2 unemployed, 3 inactive, but universe and age/ref-period transport not established.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "V01"
+      ],
+      "eph_2024q3_field": "IV1",
+      "legacy_concept": "V01",
+      "legacy_cpv2010_field": "V01",
+      "qualification": "needs_scientific_review",
+      "rationale": "Same field code may have revised dwelling categories and universe; reject identity assumption until full labels compared.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H10"
+      ],
+      "eph_2024q3_field": "IV3",
+      "legacy_concept": "H05",
+      "legacy_cpv2010_field": "H05",
+      "qualification": "needs_scientific_review",
+      "rationale": "Historical H05 floor material corresponds to 2022 H10 floor material; compare categories for 2022 new material labels.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H11"
+      ],
+      "eph_2024q3_field": "IV4",
+      "legacy_concept": "H06",
+      "legacy_cpv2010_field": "H06",
+      "qualification": "needs_scientific_review",
+      "rationale": "April 2025 VP source catalog stores H11 (label: exterior roof material); current online 2022 dictionary uses combined H11_H12. Source-vintage category/universe equivalence must be established, including source code 99 (ignored).",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H11"
+      ],
+      "eph_2024q3_field": "IV5",
+      "legacy_concept": "H07",
+      "legacy_cpv2010_field": "H07",
+      "qualification": "needs_scientific_review",
+      "rationale": "April 2025 VP source stores H11 roof material (codes include 99), while current online uses combined H11_H12 roof+ceiling. Whether presence of interior ceiling is recoverable from April H11 requires source-specific official codes; not approved.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H13"
+      ],
+      "eph_2024q3_field": "IV6",
+      "legacy_concept": "H08",
+      "legacy_cpv2010_field": "H08",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 H08 water distribution; 2022 H13 water availability; universes and codes require review.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H14"
+      ],
+      "eph_2024q3_field": "IV7",
+      "legacy_concept": "H09",
+      "legacy_cpv2010_field": "H09",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 H09 water source; 2022 H14 water source for drinking/cooking; compare 2022 response options.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H15_17",
+        "H16"
+      ],
+      "eph_2024q3_field": "IV8",
+      "legacy_concept": "H10",
+      "legacy_cpv2010_field": "H10",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 H10 bathroom presence conflicts with 2022 H10 floor material. April 2025 VP has H15_17 inodoro discharge variable (not H15_H17) and H16 bathroom count; no automatic common representation without conditional recode.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H15_17"
+      ],
+      "eph_2024q3_field": "IV10",
+      "legacy_concept": "H11",
+      "legacy_cpv2010_field": "H11",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 H11 toilet mechanism was rejected in historical policy. April 2025 VP uses H15_17; no promotion without independent source value comparison.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H18"
+      ],
+      "eph_2024q3_field": "IV11",
+      "legacy_concept": "H12",
+      "legacy_cpv2010_field": "H12",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 H12 sewer/drainage; 2022 H18 toilet discharge; compare category meanings and availability.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [],
+      "eph_2024q3_field": "II9",
+      "legacy_concept": "H13",
+      "legacy_cpv2010_field": "H13",
+      "qualification": "needs_scientific_review",
+      "rationale": "DANGEROUS: 2010 H13 bathroom sharing; 2022 H13 water access; no direct bathroom-sharing field confirmed.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H19"
+      ],
+      "eph_2024q3_field": "II8",
+      "legacy_concept": "H14",
+      "legacy_cpv2010_field": "H14",
+      "qualification": "needs_scientific_review",
+      "rationale": "DANGEROUS: 2010 H14 cooking fuel; 2022 H14 drinking water source, 2022 H19 is fuel.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [],
+      "eph_2024q3_field": "II2",
+      "legacy_concept": "H15",
+      "legacy_cpv2010_field": "H15",
+      "qualification": "needs_scientific_review",
+      "rationale": "Historical EPH II2 / CPV2010 H15 number of sleeping rooms: the official CPV2022 VP dictionary does not list an H21 field. H20 is total rooms (not sleeping rooms); no direct equivalent for II2 established in this source.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H20"
+      ],
+      "eph_2024q3_field": "II1",
+      "legacy_concept": "H16",
+      "legacy_cpv2010_field": "H16",
+      "qualification": "needs_scientific_review",
+      "rationale": "DANGEROUS: 2010 H16 rooms total vs 2022 H16 number of bathrooms; 2022 H20 is rooms total.",
+      "transport_approved": false
+    },
+    {
+      "cpv2022_candidate_sources": [
+        "H22"
+      ],
+      "eph_2024q3_field": "II7",
+      "legacy_concept": "PROP",
+      "legacy_cpv2010_field": "PROP",
+      "qualification": "needs_scientific_review",
+      "rationale": "2010 PROP dwelling/land tenure vs 2022 H22 dwelling ownership, categories require explicit mapping.",
+      "transport_approved": false
+    }
+  ],
+  "contract": "research.cpv2022-semantic-candidate-review/v1",
+  "contract_guardrails": [
+    "Do not use CPV2010 codebook on CPV2022 samples.",
+    "2022 P03 is gender identity, never age; age field is EDAD.",
+    "2022 P02 sex code order is reverse of EPH CH04.",
+    "2022 H10/H13/H14/H16 are concept collisions relative to 2010.",
+    "All mappings require source-specific response masks and universe review.",
+    "No sampled 2022 frame here represents the national population.",
+    "These diagnostic mappings must never be used for income inference or publication."
+  ],
+  "historical_reference": "real_2024q3_cpv2010_review_policy.json",
+  "official_source_urls": [
+    "https://redatam.indec.gob.ar/redarg/CENSOS/CPV2022/Docs/Redatam_Definiciones_de_la_base_de_datos.pdf",
+    "https://redatam.indec.gob.ar/binarg/RpWebStats.exe/Dictionary?BASE=CPV2022&ITEM=DICPOB&lang=ESP",
+    "https://redatam.indec.gob.ar/binarg/RpWebStats.exe/Dictionary?BASE=CPV2022&ITEM=DICHOG&lang=ESP",
+    "https://www.indec.gob.ar/ftp/cuadros/menusuperior/eph/EPH_registro_2T2024.pdf"
+  ],
+  "source_dictionary_identity": {
+    "compatibility": "Current INDEC online field aliases and composite names are not guaranteed to match this April-2025 VP archive.",
+    "field_name_differences": {
+      "2022 online H11_H12": "April VP H11",
+      "2022 online H15_H17": "April VP H15_17",
+      "2022 online H15_H17_H18": "April VP H15_17_18",
+      "2022 online H20_HACINA": "April VP H20CP"
+    },
+    "local_source_catalog_path": "Elements1/CENSO_work/benchmarks/rpo11-cpv2022-aligner-qualification-20261117/cpv2022_vp_source_catalog_apr2025.json",
+    "local_source_catalog_sha256": "4edf26934c0145638edab661706605f15d9eb02a0439162f7501ff4470588f30",
+    "source": "April 2025 RedatamX VP cpv2022.rxdb; source family SHA256 af83121cace5d8f33926f7324a61c79e7103bc4a96ef1e96bb53e2a079adadbb"
+  },
+  "status": "source_definition_triage_plus_bounded_diagnostic_no_transport_approval"
+}
